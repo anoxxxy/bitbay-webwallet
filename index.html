@@ -57,6 +57,8 @@
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
 
+  
+
   <script type="text/javascript" src="js/crypto-min.js"></script>
   <script type="text/javascript" src="js/crypto-sha256.js"></script>
   <script type="text/javascript" src="js/crypto-sha256-hmac.js"></script>
@@ -108,10 +110,15 @@
                 <li class="hidden"><a href="#newAddress" data-toggle="tab">New Address</a></li>
                 <li><a href="#newTimeLocked" data-toggle="tab">Time Locked Address</a></li>
                 <li><a href="#newMultiSig" data-toggle="tab">MultiSig Address</a></li>
+                <li><a href="#newHDaddress" data-toggle="tab">HD Address</a></li>
+                <li class="divider-text"></li>
                 <li><a href="#verify" data-toggle="tab">Verify</a></li>
                 <li><a href="#newTransaction" data-toggle="tab">Transaction</a></li>
                 <li><a href="#sign" data-toggle="tab">Sign</a></li>
                 <li><a href="#broadcast" data-toggle="tab">Broadcast</a></li>
+                <!-- <li class="divider-text"></li>
+                <li><a href="#signMsg" data-toggle="tab">Sign Message</a></li>
+                <li><a href="#verifyMsg" data-toggle="tab">Verify Message</a></li> -->
                 <li class="divider-text"></li>
                 <li><a href="#help" data-toggle="tab">Help - F.A.Q. </a></li>
                 <li class="divider-text logouthide"></li>
@@ -299,7 +306,7 @@
                       </div>
                       
                       <div class="form-group form-accept checkbox">
-                        <p class="underterms">No email/password is stored on our server. If you forget your email or password it CANNOT be recovered! You can print/backup your wallet after you login.</p>
+                        <p class="alert alert-danger">No email/password is stored on our server. If you forget your email or password it CANNOT be recovered! You can print/backup your wallet after you login.</p>
                         
                         <label for="acceptTerms">
                           <input id="acceptTerms" type="checkbox"> I have read the <a href="#disclaimer" role="button" class="btn-flat" data-toggle="modal">disclaimer</a> and have stored my login information
@@ -1465,6 +1472,10 @@
 									</span>
               </div>
             </div>
+            <div class="col-md-12 hidden">
+              <label for="signPrivateKeyAESPassword">AES password (optional)</label>
+              <input id="signPrivateKeyAESPassword" type="password" class="form-control" value="">
+            </div>
           </div>
           <br>
 
@@ -1801,6 +1812,126 @@
           <input type="submit" class="btn-flatbay " id="settingsBtn">
 
         </div>
+
+        <!-- Sign & Verify Message 
+        
+        <div class="tab-pane tab-content" id="signMsg">
+          <div class="row">
+            <div class="col-md-12">
+
+              <h2 data-original-title="" title="">Sign Message <small data-original-title="" title="">sign a message with your private key!</small></h2>
+              
+
+              <div class="col-md-12" data-original-title="" title="">
+                <label for="msgSignPrivateKey" data-original-title="" title="">Private key</label>
+
+                <div class="input-group" data-original-title="" title="">
+                  <input id="msgSignPrivateKey" type="password" class="form-control" value="" data-original-title="" title="">
+                  <span class="input-group-btn" data-original-title="" title="">
+                      <button class="showKey btn btn-default" type="button" data-original-title="" title="">Show</button>
+                    </span>
+                </div>
+              </div>
+
+              <div class="col-md-12" data-original-title="" title="">
+                <label for="msgSignAddress" data-original-title="" title="">Address</label>
+
+                  <input id="msgSignAddress" type="text" class="form-control" value="" data-original-title="" title="">
+                
+              </div>
+
+              <div class="col-md-12" data-original-title="" title="">
+                <label for="msgText" data-original-title="" title="">Message</label>
+
+                  <textarea class="form-control" id="msgText" rows="5" spellcheck="false"></textarea>
+              </div>
+
+              <div class="col-md-12 hidden" data-original-title="" title="">
+                <label class="" for="msgSignType">Signature Type</label>
+                <input name="msgSignType" value="inputs_io" type="radio" checked/>Inputs.IO
+              </div>
+
+
+              <div class="col-md-12" data-original-title="" title="">
+                <label for="msgTxtSigned" data-original-title="" title="">Signed Message</label>
+                  <textarea class="form-control" id="msgTxtSigned" rows="5" spellcheck="false"></textarea>
+              </div>
+
+              <div class="col-md-12" data-original-title="" title="">
+                <br>
+                <button class="btn-flatbay " id="msgSignBtn" title="Signatures require a random number which means signing the same data twice results in different signatures" type="button">Sign Message</button>
+                <span class="help-inline" id="sgLabel"></span>
+              </div>
+
+
+
+              
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="tab-pane tab-content" id="verifyMsg">
+          <div class="row">
+            <div class="col-md-12">
+
+              <h2 data-original-title="" title="">Verify Message <small data-original-title="" title="">verify a signed message!</small></h2>
+              <form action="/" class="form-horizontal" id="vrForm" method="get" name="vrForm">
+                <fieldset>
+                  <legend>Verify Message</legend>
+                  <div class="hidden">
+                    <div class="col-lg-offset-2 col-lg-10 alert alert-success fade in" id="vrSuccess">
+                      <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button> Message verified to be from <span id="vrAddrLabel"></span>
+                    </div>
+                    <div class="col-lg-offset-2 col-lg-10 alert alert-danger fade in" id="vrError">
+                      <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button> Message failed to verify!
+                    </div>
+                    <div class="col-lg-offset-2 col-lg-10 alert alert-warning fade in" id="vrWarning">
+                      <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button> Message verified to be from <span id="vrAddrLabel"></span> (address wasn't specified)
+                    </div>
+                  </div>
+                  <div id="vrAlert"></div>
+                  <div class="form-group">
+                    <label class="col-lg-2 control-label" for="vrFrom">Verify From</label>
+                    <div class="col-lg-10 controls">
+                      <div class="btn-group" data-toggle="buttons" id="vrFrom">
+                        <label class="btn btn-default active" title="RFC2440-like"><input id="vrFromMessage" name="vrFrom" type="radio" checked="">Signed Message</label>
+                        <label class="btn btn-default"><input id="vrFromForm" name="vrFrom" type="radio">Bitcoin-QT</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group vrAddr" hidden="">
+                    <label class="col-lg-2 control-label" for="vrAddr">Address</label>
+                    <div class="col-lg-10 controls">
+                      <input class="form-control" id="vrAddr" type="text">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-lg-2 control-label" for="vrMsg">Message</label>
+                    <div class="col-lg-10 controls">
+                      <textarea class="form-control" id="vrMsg" rows="14" spellcheck="false"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group vrSig" hidden="">
+                    <label class="col-lg-2 control-label" for="vrSig">Signature</label>
+                    <div class="col-lg-10 controls">
+                      <input class="form-control" id="vrSig" spellcheck="false" type="text">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-lg-offset-2 col-lg-10 controls">
+                      <button class="hidden btn btn-default" id="vrSign" title="Copy message to the sign page and get into it." type="button">Copy to Sign Page</button>
+                    </div>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      -->
+
+
 
 
       </div>

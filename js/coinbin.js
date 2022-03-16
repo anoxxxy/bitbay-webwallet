@@ -3065,17 +3065,65 @@ rawSubmitBtn
 
 
 	/* sign code */
+	$("#signPrivateKey").change(function(){
+		var signedPrivKey = $(this);
+		if(signedPrivKey){
+
+			$(signedPrivKey).parent().removeClass('has-error').removeClass('has-success');
+
+			if((signedPrivKey.val()).search('U2') == 0) {
+
+				var aesPassphrase = $("#signPrivateKeyAESPassword");
+				var decrypted = CryptoJS.AES.decrypt(signedPrivKey.val(), aesPassphrase.val()).toString(CryptoJS.enc.Utf8);
+
+				$(aesPassphrase).parent().removeClass("hidden");
+				console.log('decrypted: ', decrypted);
+
+				if(coinjs.addressDecode(decrypted)){
+					$(aesPassphrase).parent().removeClass('has-error').addClass('has-success');
+					signedPrivKey.val(decrypted);
+				} else {
+					$(aesPassphrase).parent().addClass('has-error').removeClass('has-success');
+				}
+
+			} else{
+				$("#signPrivateKeyAESPassword").parent().addClass("hidden");
+				console.log('there is no aes encryption!')
+			}
+			
+		}
+	});
+
 
 	$("#signBtn").click(async function(){
 		$(this).attr('disabled',true);
 
 		var wifkey = $("#signPrivateKey");
+		var aesPassphrase = $("#signPrivateKeyAESPassword");
 		var script = $("#signTransaction");
 
-		if(coinjs.addressDecode(wifkey.val())){
-			$(wifkey).parent().removeClass('has-error');
-		} else {
-			$(wifkey).parent().addClass('has-error');
+		//check if user has set AES password and decrypt it!
+		if(aesPassphrase.val()!=""){
+			
+			try {
+				var decrypted = CryptoJS.AES.decrypt(wifkey.val(), aesPassphrase.val()).toString(CryptoJS.enc.Utf8);
+				if(coinjs.addressDecode(decrypted)){
+					$(aesPassphrase).parent().removeClass('has-error').addClass('has-success');
+					wifkey.val(decrypted);
+					$(wifkey).parent().removeClass('has-error').addClass('has-success');
+				} else {
+					$(aesPassphrase).parent().addClass('has-error').removeClass('has-success');
+				}
+			} catch(e) {
+				 console.log(e);
+				$(aesPassphrase).parent().addClass('has-error').removeClass('has-success');
+			}
+		}else {
+			if(coinjs.addressDecode(wifkey.val())){
+				$(wifkey).parent().removeClass('has-error');
+			} else {
+				$(wifkey).parent().addClass('has-error');
+			}
 		}
 
 		if((script.val()).match(/^[a-f0-9]+$/ig)){
