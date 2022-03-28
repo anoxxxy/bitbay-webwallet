@@ -562,6 +562,28 @@ PNotify_remove = function () {
   sign_progressbar.go(0);
 
 
+//https://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript
+function generatePassword(length = 40) {
+  var generatePass = (
+  //length = 20,
+  wishlist = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~'
+) =>
+  Array.from(crypto.getRandomValues(new Uint32Array(length)))
+    .map((x) => wishlist[x % wishlist.length])
+    .join('');
+
+  return generatePass();  
+}
+
+//Crypto Random Password generator! 
+$('.generatePassword').on("click", function () {
+    var $el = $(this);
+
+    $("#newMnemonicxpub").val("");
+    $("#newMnemonicxprv").val("");
+    var inputElPass = $el.attr( "data-input-for");
+    $("#"+inputElPass).val(generatePassword());
+  });
 /*
 
 if (document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll)) {

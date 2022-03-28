@@ -75,6 +75,9 @@
 
   <!-- <script type="text/javascript" src="https://wallet.bitbay.market/servers.js?v=1.12"></script> !-->
   <script type="text/javascript" src="assets/js/nanobar.js"></script>
+
+
+  <script type="text/javascript" src="js/bip39.js"></script>
   <script type="text/javascript" src="js/coin.js?v=1.12"></script>
   <script type="text/javascript" src="js/coinbin.js?v=1.12"></script>
 
@@ -111,6 +114,8 @@
                 <li><a href="#newTimeLocked" data-toggle="tab">Time Locked Address</a></li>
                 <li><a href="#newMultiSig" data-toggle="tab">MultiSig Address</a></li>
                 <li><a href="#newHDaddress" data-toggle="tab">HD Address</a></li>
+                <li><a href="#newMnemonicaddress" data-toggle="tab">Mnemonic Address</a></li>
+                
                 <li class="divider-text"></li>
                 <li><a href="#verify" data-toggle="tab">Verify</a></li>
                 <li><a href="#newTransaction" data-toggle="tab">Transaction</a></li>
@@ -919,7 +924,7 @@
           <div class="input-group">
             <input id="newHDxpub" type="text" class="form-control" value="" readonly>
             <span class="input-group-btn">
-								<button class="deriveHDbtn btn btn-default" type="button"><span title="Derive from key" class="glyphicon glyphicon-chevron-right"></span></button>
+                <button class="deriveHDbtn btn btn-default" type="button"><span title="Derive from key" class="glyphicon glyphicon-chevron-right"></span></button>
             </span>
           </div>
 
@@ -927,7 +932,7 @@
           <div class="input-group">
             <input id="newHDxprv" type="text" class="form-control" value="" readonly>
             <span class="input-group-btn">
-								<button class="deriveHDbtn btn btn-default" type="button"><span title="Derive from key" class="glyphicon glyphicon-chevron-right"></span></button>
+                <button class="deriveHDbtn btn btn-default" type="button"><span title="Derive from key" class="glyphicon glyphicon-chevron-right"></span></button>
             </span>
           </div>
 
@@ -942,6 +947,61 @@
 
           <input type="button" class="btn-flatbay " value="Generate" id="newHDKeysBtn">
         </div>
+
+        <div class="tab-pane tab-content" id="newMnemonicaddress">
+          <h2>New Mnemonic Address <small>making bip39 even easier</small></h2>
+          <p>Use the form below to generate a <i>Mnemonic</i> master address.</p>
+
+          <label>xPub Address</label>
+          <div class="input-group">
+            <input id="newMnemonicxpub" type="text" class="form-control" value="" readonly>
+            <span class="input-group-btn">
+                <button class="deriveHDbtn btn btn-default" type="button"><span title="Derive from key" class="glyphicon glyphicon-chevron-right"></span></button>
+            </span>
+          </div>
+
+          <label>xPrv Address</label>
+          <div class="input-group">
+            <input id="newMnemonicxprv" type="text" class="form-control" value="" readonly>
+            <span class="input-group-btn">
+                <button class="deriveHDbtn btn btn-default" type="button"><span title="Derive from key" class="glyphicon glyphicon-chevron-right"></span></button>
+            </span>
+          </div>
+
+
+
+          <h3>Address Options</h3>
+          <p>You can use the generate button different kinds of mnemonic master keys.</p>
+
+          
+            <label for="newMnemonicWords" data-original-title="" title="">BIP39 Mnemonic</label>
+
+            <div class="input-group" data-original-title="" title="">
+              <input id="newMnemonicWords" type="text" class="form-control" value="" data-original-title="" title="">
+              <span class="input-group-btn" data-original-title="" title="">
+                  <button id="newMnemonicGenerate" class="btn btn-default" type="button" data-original-title="" title="">Generate</button>
+                </span>
+            </div>
+          
+
+
+          <div class="checkbox">
+            <label><input type="checkbox" id="newMnemonicBrainwalletCheck" class="checkbox-inline"> BIP39 Password (recommended)</label>
+            
+
+            <div class="input-group" data-original-title="" title="">
+              <input type="text" class="form-control hidden" id="MnemonicBrainwallet">
+              <span class="input-group-btn hidden" data-original-title="" title="">
+                  <button class="btn btn-default generatePassword" type="button" data-input-for="MnemonicBrainwallet" data-original-title="" title="">Generate Password</button>
+                </span>
+            </div>
+
+
+          </div>
+
+          <input type="button" class="btn-flatbay " value="Generate" id="newMnemonicKeysBtn">
+        </div>
+
 
         <div class="tab-pane tab-content" id="newTransaction">
           <h2>Transaction <small>Create a new transaction</small></h2>
@@ -1406,27 +1466,32 @@
             <p>The path of key derivation</p>
 
             <div class="row">
-              <div class="col-md-8">
-                <b>Path</b>
-                <br>
-                <select class="form-control">
-                  <option>Simple: m/i</option>
-                </select>
-              </div>
+                <div class="col-md-8">
+                  <b>Path</b><br>
+                  <select class="form-control" id="hdpathtype"">
+                    <option value="simple">Simple: m/i</option>
+                    <option value="custom">Custom</option>
+                  </select>
 
-              <div class="col-md-2">
-                <b>Index (Start)</b>
-                <br>
-                <input type="text" class="form-control derivation_index_start" value="0">
-              </div>
+                  <div id="hdpath" class="hidden" style="margin-top:4px">
+                    <span class="input-group">
+                      <input type="text" class="form-control" value="m/0/1">  <br>
+                      <span class="input-group-addon"> / </span>
+                    </span>
+                  </div>
+                </div>
 
-              <div class="col-md-2">
-                <b>Index (End)</b>
-                <br>
-                <input type="text" class="form-control derivation_index_end" value="1">
-              </div>
+                <div class="col-md-2">
+                  <b><u>I</u>ndex (Start)</b><br>
+                  <input type="text" class="form-control derivation_index_start" value="0">
+                </div>
 
-            </div>
+                <div class="col-md-2">
+                  <b><u>I</u>ndex (End)</b><br>
+                  <input type="text" class="form-control derivation_index_end" value="1">
+                </div>
+
+              </div>
 
             <hr>
             <h4>Keys</h4>
@@ -1682,7 +1747,7 @@
               <select class="form-control" id="coinjs_coin">
                 <option value="bitbay_mainnet" rel="0x19;0x99;0x55;0x02cfbf60;0x02cfbede;explorer.bitbay.market;explorer.bitbay.market;true;BAY">Bitbay (mainnet)</option>
 
-                <option value="bitcoin_mainnet" rel="0x00;0x80;0x05;0x488b21e;0x488ade4;coinb.in;coinb.in;false;BTC">BitBay (mainnet)</option>
+                <option value="bitcoin_mainnet" rel="0x00;0x80;0x05;0x488b21e;0x488ade4;coinb.in;coinb.in;false;BTC">Bitcoin (mainnet)</option>
 
                 <option value="dogecoin_mainnet" rel="0x1e;0x9e;0x16;0x0827421e;0x089944e4;chain.so_dogecoin;chain.so_dogecoin;false;DOGE">Dogecoin (mainnet)</option>
                 <option value="carboncoin_mainnet" rel="0x2f;0xaf;0x05;0x488b21e;0x488ade4;cryptoid.info_carboncoin;cryptoid.info_carboncoin;false;CARB">Carboncoin (mainnet)</option>

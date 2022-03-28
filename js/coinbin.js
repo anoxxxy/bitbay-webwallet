@@ -1,6 +1,6 @@
 var profile_data = "";
 var debug = false;
-
+var bip39 = new BIP39('en');
 
 $(document).ready(function() {
 
@@ -1456,6 +1456,63 @@ function drawPieChart(piechart, pegBalanceData) {
 		}
 	});
 
+	
+	/* new -> Mnemonic address code */
+
+	$("#newMnemonicGenerate").click(function(){
+		$("#newMnemonicxpub").val("");
+		$("#newMnemonicxprv").val("");
+		var s = bip39.generateMnemonic((24/3)*32);	//24 mnemonic words!
+		$("#newMnemonicWords").val(s);
+		$("#newMnemonicWords").parent().removeClass("has-warning").removeAttr('title').attr('title', '').attr("data-original-title", '');
+	});
+
+	$("#newMnemonicKeysBtn").click(function(){
+
+		console.log('checked? ', $("#newMnemonicBrainwalletCheck").is(":checked"));
+		coinjs.compressed = true;
+		var s  = $("#newMnemonicWords").val();	//seed
+		console.log('newMnemonicKeysBtn');
+		//validate bip39 mnemonic
+		if(!bip39.validate(s)){
+        $("#newMnemonicxpub").val("");
+				$("#newMnemonicxprv").val("");
+        $("#newMnemonicWords").parent().addClass("has-warning").attr('title', 'Incorrect BIP39 Phrase').attr("data-original-title", 'Incorrect BIP39 Phrase').tooltip();
+
+
+        return ;
+		} else {
+			$("#newMnemonicWords").parent().removeClass("has-warning").removeAttr('title');
+
+			$("#newMnemonicWords .tooltip").remove();
+    //$("#walletSpendTo .addressRemove").find(".tooltip").remove().unbind("");
+		}
+
+
+		var p  = ($("#newMnemonicBrainwalletCheck").is(":checked")) ? $("#MnemonicBrainwallet").val() : null;	//user pass
+		console.log('p: ', p);
+		var hd = coinjs.hd();
+		var pair = hd.masterMnemonic(s, p);
+		$("#newMnemonicxpub").val(pair.pubkey).fadeIn();
+		$("#newMnemonicxprv").val(pair.privkey).fadeIn();
+		
+	});
+
+	$("#newMnemonicBrainwalletCheck").click(function(){
+		if($(this).is(":checked")){
+			$("#MnemonicBrainwallet").removeClass("hidden");
+			$("#MnemonicBrainwallet").next().removeClass("hidden")
+
+		} else {
+			$("#MnemonicBrainwallet").addClass("hidden");
+			$("#MnemonicBrainwallet").next().addClass("hidden")
+		}
+	});
+
+	
+
+	
+
 	/* new -> transaction code */
 	$("#recipients .addressAddTo").click(function(){
 
@@ -2286,7 +2343,9 @@ observer.observe(target, config);
 
 		if($("#redeemFromStatus").hasClass("hidden")) {
 			// An ethical dilemma: Should we automatically set nLockTime?
-			if(redeem.from == 'redeemScript' && redeem.decodedRs.type == "hodl__") {
+			//if(redeem.from == 'redeemScript' && redeem.decodedRs.type == "hodl__") {
+			//if(redeem.from == 'redeemScript' && redeem.decodescript.type == "hodl__") {
+			if(redeem.from == 'redeemScript' && redeem.type == "hodl__") {
 				$("#nLockTime").val(redeem.decodedRs.checklocktimeverify);
 			} else {
 				$("#nLockTime").val(0);
@@ -2303,28 +2362,41 @@ observer.observe(target, config);
 		if(decode.version == coinjs.pub){ // regular address
 			r.addr = string;
 			r.from = 'address';
-			r.isMultisig = false;
+			r.redeemscript = false;
 		} else if (decode.version == coinjs.priv){ // wif key
 			var a = coinjs.wif2address(string);
 			r.addr = a['address'];
 			r.from = 'wif';
-			r.isMultisig = false;
+			r.redeemscript = false;
 		} else if (decode.version == coinjs.multisig){ // mulisig address
 			r.addr = '';
 			r.from = 'multisigAddress';
-			r.isMultisig = false;
+			r.redeemscript = false;
+		} else if(decode.type == 'bech32'){
+			r.addr = string;
+			r.from = 'bech32';
+			r.decodedRs = decode.redeemscript;
+			r.redeemscript = true;
 		} else {
 			var script = coinjs.script();
 			var decodeRs = script.decodeRedeemScript(string);
 			if(decodeRs){ // redeem script
 				r.addr = decodeRs['address'];
 				r.from = 'redeemScript';
-				r.decodedRs = decodeRs;
-				r.isMultisig = true; // not quite, may be hodl
+				r.decodedRs = decodeRs.redeemscript;
+				r.type = decodeRs['type'];
+				r.redeemscript = true;
+				r.decodescript = decodeRs;
 			} else { // something else
-				r.addr = '';
-				r.from = 'other';
-				r.isMultisig = false;
+				if(string.match(/^[a-f0-9]{64}$/i)){
+					r.addr = string;
+					r.from = 'txid';
+					r.redeemscript = false;
+				} else {
+					r.addr = '';
+					r.from = 'other';
+					r.redeemscript = false;
+				}
 			}
 		}
 		return r;
@@ -3051,7 +3123,11 @@ rawSubmitBtn
 		var html = '';
 		$("#verifyHDaddress .derived_data table tbody").html("");
 		for(var i=index_start;i<=index_end;i++){
-			var derived = hd.derive(i);
+			if($("#hdpathtype option:selected").val()=='simple'){
+				var derived = hd.derive(i);
+			} else {
+				var derived = hd.derive_path(($("#hdpath input").val().replace(/\/+$/, ""))+'/'+i);
+			}
 			html += '<tr>';
 			html += '<td>'+i+'</td>';
 			html += '<td><input type="text" class="form-control" value="'+derived.keys.address+'" readonly></td>';
@@ -3063,6 +3139,13 @@ rawSubmitBtn
 		$(html).appendTo("#verifyHDaddress .derived_data table tbody");
 	}
 
+	$("#hdpathtype").change(function(){
+		if($(this).val()=='simple'){
+			$("#hdpath").removeClass().addClass("hidden");
+		} else {
+			$("#hdpath").removeClass();
+		}
+	});
 
 	/* sign code */
 	$("#signPrivateKey").change(function(){
@@ -3268,9 +3351,7 @@ rawSubmitBtn
 
 	$('a[data-toggle="tab"]').on('click', function(e) {
 		e.preventDefault();
-		var attr = $(e.target).attr('href');
-		// For some browsers, `attr` is undefined; for others, `attr` is false. Check for both.
-		if (typeof attr !== typeof undefined && attr !== false) {
+		if(e.target && $(e.target).attr('href')) {
 			history.pushState(null, null, '#'+$(e.target).attr('href').substr(1));
 		}
 	});
@@ -3467,7 +3548,7 @@ rawSubmitBtn
 			} else if (str.search(/[A-Z]/) == -1) {
 				msg= ("no_upper_case");
 			//} else if (str.search(/[^a-zA-Z0-9\!\@\#\$\%\^\&\*\(\)\_\+\.\=\,\;\:\!\-]/) != -1) {
-			} else if (str.search(/[^a-zA-Z0-9\!\@\€\¤\£\`\´\#\$\"\'\%\^\&\*\(\)\_\+\.\=\~\¨\|\,\;\:\!\-\[\]\}\{\/\\\?\>\<\^]/) != -1) {
+			} else if (str.search(/[^a-zA-Z0-9\!\@\§\½\€\¤\£\`\´\#\$\"\'\%\^\&\*\(\)\_\+\.\=\~\¨\|\,\;\:\!\-\[\]\}\{\/\\\?\>\<\^]/) != -1) {
 				msg= ("bad_char");
 			}else {
 				msg=("");
@@ -3665,7 +3746,7 @@ rawSubmitBtn
 							}
 
 						} else {
-							$("#openLoginStatus").html("Your 2nd password must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from !@#$%^&*()_+.=,;:!-[]}{/\?><^").removeClass("hidden").fadeOut().fadeIn();							
+							$("#openLoginStatus").html("Your 2nd password must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from \"#$€%&\'()*+,-./:;<=>?@[\]^_`{|}~¤¨½§").removeClass("hidden").fadeOut().fadeIn();							
 						}
 						
 					//Create Regular address
@@ -3748,7 +3829,7 @@ rawSubmitBtn
 						}
 					
 				} else {
-					$("#openLoginStatus").html("Your password must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from !@#$%^&*()_+.=,;:!-[]}{/\?><^").removeClass("hidden").fadeOut().fadeIn();
+					$("#openLoginStatus").html("Your password must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from \"#$€%&\'()*+,-./:;<=>?@[\]^_`{|}~¤¨½§").removeClass("hidden").fadeOut().fadeIn();
 				}
 				
 			
