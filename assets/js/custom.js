@@ -548,16 +548,16 @@ PNotify_remove = function () {
 
 
 
-
+//privkey signing progressbar init
  var sign_progressbar;
 
   //init progressbar for signing
   if(document.getElementById('sign').classList.contains('active')){
    sign_progressbar = new Nanobar({target: document.getElementById('nanobar-progress')});
-    console.log('nanobar-progress');
+    //console.log('nanobar-progress');
   }else{
    sign_progressbar = new Nanobar({target: document.getElementById('nanobar-progress-manual')});
-    console.log('nanobar-progress-manual');
+    //console.log('nanobar-progress-manual');
   }
   sign_progressbar.go(0);
 
@@ -579,8 +579,11 @@ function generatePassword(length = 40) {
 $('.generatePassword').on("click", function () {
     var $el = $(this);
 
-    $("#newMnemonicxpub").val("");
-    $("#newMnemonicxprv").val("");
+    if($el[0].dataset.inputFor == 'MnemonicBrainwallet') {
+      $("#newMnemonicxpub").val("");
+      $("#newMnemonicxprv").val("");
+    }
+
     var inputElPass = $el.attr( "data-input-for");
     $("#"+inputElPass).val(generatePassword());
   });

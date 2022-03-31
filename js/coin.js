@@ -864,8 +864,6 @@ https://api.latoken.com/v2/ticker
 			seed = seed.normalize('NFKD');
 			pass = (pass !== null) ? pass.normalize('NFKD') : pass;
 
-			console.log('seed: ', seed);
-			console.log('pass: ', pass);
 			seeder = bip39.mnemonicToSeed(seed, pass);
 
 			var hasher = new jsSHA(seeder, 'HEX');

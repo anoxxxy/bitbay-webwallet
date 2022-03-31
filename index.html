@@ -100,7 +100,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li class="loginhide active"><a href="#wallet" data-toggle="tab">Regular Wallet</a></li>
-                <li class="loginhide"><a href="#wallet" data-toggle="tab" id="multisigwalletLink">Individual MultiSig Wallet</a></li>
+                <li class="loginhide"><a href="#wallet" data-toggle="tab" id="multisigwalletLink">MultiSig Wallet</a></li>
                 <li class="logouthide">
                   <a href="#wallet" data-toggle="tab">Wallet
 											<p class="text-left small walletEmail"></p>
@@ -183,8 +183,8 @@
           <div class="col-md-4 col-sm-4 col-xs-6">
             <div class="panel panel-default">
               <div class="panel-body pegIndex">
-                <h4 title="Peg index: seems to go up lately..."><span class="glyphicon glyphicon-scale"></span> <span id="currentPegIndex"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> <span class="glyphicon glyphicon-arrow-right"></span></h4>
-                <p id="nextPegIndex">Next Peg index is 0</p> 
+                <h4 title="Peg index: seems to go up lately..."><span class="glyphicon glyphicon-scale"></span> <span class="currentPegIndex"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> <span class="glyphicon glyphicon-arrow-right"></span></h4>
+                <p class="nextPegIndex">Next Peg index is 0</p> 
               </div>
               
             </div>
@@ -206,45 +206,7 @@
     </div>
     </div>
 
-    <!-- Network topPanel-->
-    <div class="row topPanel networkTopPanel hidden">
-        <div class="col-md-12 ">
-        <div class="row">
-          <div class="bs-component">
-        
-          <div class="col-md-4 col-sm-4 col-xs-12">
-            <div class="panel panel-default">
-              <div class="panel-body coinPrice">
-                  <p><span class="glyphicon glyphicon-briefcase"></span> Price (Ratedb - Github)</p>
-                  <div class="coin_price"><h4><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></h4><p class="price_track"></p></div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-md-4 col-sm-4 col-xs-6">
-            <div class="panel panel-default">
-              <div class="panel-body blockHeight">
-                <h4 ><span class=" glyphicon glyphicon-cloud"></span> <span id="currentBlockHeight"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> </h4>
-                <p id="nextPegIndex">Blocks in chain</p> 
-              </div>
-              
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-xs-6">
-            <div class="panel panel-default">
-              <div class="panel-body pegCycle">
-                <h4 title="Peg cycle"><span class="glyphicon glyphicon-refresh"></span> <span id="pegCycleId"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span></h4>
-                <p title="A total of 0 Peg cycles has happened" >Peg cycle</p> 
-              </div>
-              
-            </div>
-          </div>
-          
-          
-        </div>
-      </div>
-    </div>
-    </div>
+
       
       <div class="tab-content">
 
@@ -948,6 +910,7 @@
           <input type="button" class="btn-flatbay " value="Generate" id="newHDKeysBtn">
         </div>
 
+        <!-- Mnemonic Address -->
         <div class="tab-pane tab-content" id="newMnemonicaddress">
           <h2>New Mnemonic Address <small>making bip39 even easier</small></h2>
           <p>Use the form below to generate a <i>Mnemonic</i> master address.</p>
@@ -1632,16 +1595,63 @@
         </div>
         
         <div class="tab-pane tab-content" id="network">
-          <h2>Network Info</h2>
-          <p>Here you can learn more about the network status, staking and rates.</br></p>
-          <p>Network info - <a href="https://chainz.cryptoid.info/bay/#!extraction">click here</a></p>
-          <p>Rates and votes - <a href="https://raw.githubusercontent.com/bitbaymarket/ratedb/master/rates.json">rates.json</a></p>
-          <p>Staking calculator - <a href="https://bitbay.market/staking-bitbay/index.html">https://bitbay.market/staking-bitbay/index.html</a></p>
-          <p>Supply, marketcap and coin distribution chart - <a href="./pegchart.htm">click here</a></p>
+          
+          <!-- Network panel info-->
+          <div class="row topPanel  ">
+            <div class="col-md-12 ">
+              <div class="row">
+                <div class="bs-component">
+              
+                <div class="col-md-4 col-sm-4 col-xs-6">
+                  <div class="panel panel-default">
+                    <div class="panel-body pegIndex">
+                      <h4 title="Peg index: seems to go up lately..."><span class="glyphicon glyphicon-scale"></span> <span class="currentPegIndex"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> <span class="glyphicon glyphicon-arrow-right"></span></h4>
+                      <p class="nextPegIndex">Next Peg index is 0</p> 
+                    </div>
+                    
+                  </div>
+                </div>
+                
+                <div class="col-md-4 col-sm-4 col-xs-6">
+                  <div class="panel panel-default">
+                    <div class="panel-body blockHeight">
+                      <h4 ><span class=" glyphicon glyphicon-cloud"></span> <span id="currentBlockHeight"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> </h4>
+                      <p class="blocksInHeight">Blocks in chain</p> 
+                    </div>
+                    
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-6">
+                  <div class="panel panel-default">
+                    <div class="panel-body pegCycle">
+                      <h4 title="Peg cycle"><span class="glyphicon glyphicon-refresh"></span> <span class="pegCycleId"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span></h4>
+                      <p title="A total of 0 Peg cycles has occurred" >Peg cycle</p> 
+                    </div>
+                    
+                  </div>
+                </div>
+                
+                
+                </div>
+              </div>
+            </div>
+          </div>
+
+          
+          <h2>Network Info <small>learn more about the network status, staking and rates.</small></h2>
+
+          
+            <p></p>
+            <p>Network info - <a href="https://chainz.cryptoid.info/bay/#!extraction">click here</a></p>
+            <p>Rates and votes - <a href="https://raw.githubusercontent.com/bitbaymarket/ratedb/master/rates.json">rates.json</a></p>
+            <p>Staking calculator - <a href="https://bitbay.market/staking-bitbay/index.html">https://bitbay.market/staking-bitbay/index.html</a></p>
+            <p>Supply, marketcap and coin distribution chart - <a href="./pegchart.htm">click here</a></p>
+          
 
 
         </div>
         
+        <!-- Help/FAQ -->
         <div class="tab-pane tab-content" id="help">
           <h2>Help/FAQ</h2>          
           <p>Dynamic peg FAQ - <a href="https://bitbay.market/forum-archive/c/dynamic-peg-faq.html">click here</a></p>

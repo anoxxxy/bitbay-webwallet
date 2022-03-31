@@ -814,11 +814,11 @@ async function init_broadcast_progress_bar(txinputs_total, manualTransaction=1) 
 			if (debug) {console.log('peginfo: ', data);}
       
       if(data.api_status=="success"){
-        $("#currentPegIndex").text( data.result.peg );
-        $("#nextPegIndex").text( "Next Peg index is " + data.result.pegnext + " and then " + data.result.pegnextnext);
+        $(".currentPegIndex").text( data.result.peg );
+        $(".nextPegIndex").text( "Next Peg index is " + data.result.pegnext + " and then " + data.result.pegnextnext);
         
-        $("#pegCycleId").text(data.result.cycle );
-        $(".pegCycle p").attr("data-original-title", "A total of " + data.result.cycle + " Peg cycles has happened");
+        $(".pegCycleId").text(data.result.cycle );
+        $(".pegCycle p").attr("data-original-title", "A total of " + data.result.cycle + " Peg cycles has occurred");
         
         if(data.result.pegnext > data.result.peg){
           $(".pegIndex h4").attr("data-original-title", "Peg-Index seems to increase lately...");
@@ -1469,10 +1469,10 @@ function drawPieChart(piechart, pegBalanceData) {
 
 	$("#newMnemonicKeysBtn").click(function(){
 
-		console.log('checked? ', $("#newMnemonicBrainwalletCheck").is(":checked"));
+		//console.log('checked? ', $("#newMnemonicBrainwalletCheck").is(":checked"));
 		coinjs.compressed = true;
 		var s  = $("#newMnemonicWords").val();	//seed
-		console.log('newMnemonicKeysBtn');
+
 		//validate bip39 mnemonic
 		if(!bip39.validate(s)){
         $("#newMnemonicxpub").val("");
@@ -1490,7 +1490,7 @@ function drawPieChart(piechart, pegBalanceData) {
 
 
 		var p  = ($("#newMnemonicBrainwalletCheck").is(":checked")) ? $("#MnemonicBrainwallet").val() : null;	//user pass
-		console.log('p: ', p);
+
 		var hd = coinjs.hd();
 		var pair = hd.masterMnemonic(s, p);
 		$("#newMnemonicxpub").val(pair.pubkey).fadeIn();
