@@ -865,7 +865,7 @@ body.loggedin {
 	margin-top: 0px;
 }
 #walletKeys input {
-	margin-bottom: 10px;
+	/*margin-bottom: 10px;*/
 }
 #walletKeys .share-yes {
 	display: none;

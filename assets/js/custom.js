@@ -60,11 +60,13 @@ $(document).ready(function() {
     $("#openWalletType").val('regular').trigger('change');
     $("#multisigwallet").removeClass("active");
     $("#regularwallet").addClass("active");    
+    $(".form-openWalletTypeText").text("Regular Wallet");
   }
   function showMultisigWallet(){
     $("#openWalletType").val('multisig').trigger('change');
     $("#regularwallet").removeClass("active");
     $("#multisigwallet").addClass("active");
+    $(".form-openWalletTypeText").text("Multisig m-of-n Wallet");
   }  
 	$("#regularwallet,a[href$='#wallet']").on("click", function () {
     showRegularWallet();
@@ -134,7 +136,7 @@ $(document).ready(function() {
       
     var print = [];
 
-    print.push("<h2>wallet login information</h1>");
+    print.push("<h2>BitBay - Wallet Backup Information!</h1>");
     
     //passwords
     print.push("<h3>Email</h2>");

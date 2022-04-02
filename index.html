@@ -234,20 +234,40 @@
                         </select>
                       </div>
 
+                      <div class="form-group form-openWalletTypeText">
+                        Regular Wallet
+                      </div>
+
+                      <div class="form-group ">
+                        <select id="multisigWalletMnumber" onChange="multisigMselect(event)">
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                        </select>
+                        
+                        <select id="multisigWalletNnumber" onChange="multisigNselect(event)">
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                        </select>
+                    </div>
+
                       <div class="form-group form-email">
-                        <input id="openEmail" type="email" class="form-control confirm-email" placeholder="Email Address" required autofocus>
+                        <input id="openEmail" name="openEmail" type="email" class="form-control confirm-email" placeholder="Email Address" required autofocus>
                       </div>
                       <div class="form-group form-email-confirm">
-                        <input id="openEmail-confirm" type="email" class="form-control confirm-input" placeholder="Email Address Confirm" confirm="#openEmail">
+                        <input id="openEmail-confirm" name="openEmail-confirm" type="email" class="form-control confirm-input" placeholder="Email Address Confirm" confirm="#openEmail">
                       </div>
                       <div class="form-group input-group form-password">
-                        <input id="openPass" type="password" class="form-control" placeholder="Password" required>
+                        <input id="openPass" name="openPass" type="password" class="form-control" placeholder="Password" required>
                         <span class="input-group-btn">
 														<button class="showKey btn btn-default" type="button">Show</button>
 													</span>
                       </div>
                       <div class="form-group input-group form-password-confirm">
-                        <input id="openPass-confirm" type="password" class="form-control confirm-input" placeholder="Password Confirm" confirm="#openPass">
+                        <input id="openPass-confirm" name="openPass-confirm" type="password" class="form-control confirm-input" placeholder="Password Confirm" confirm="#openPass">
                         <span class="input-group-btn">
 														<button class="showKey btn btn-default" type="button">Show</button>
 													</span>
@@ -383,6 +403,8 @@
                               </ul>
                             </li>
                           </ul>
+
+
                           <div class="tab-content" id="WalletTabContent">
                             <div class="tab-pane fade" id="walletBackup">
                               <div class="backuptext">
@@ -424,6 +446,7 @@
 																			</span>
                                   </div>
 
+                                  <!-- 
                                   <label class="wallet_maybe_multisig_keys hide">AES-256 Encrypted WIF key (Private - Don't share)</label>
                                   <div class="input-group wallet_maybe_multisig_keys hide">
                                     <input class="form-control privkeyaes" type="password" readonly>
@@ -437,6 +460,8 @@
 																				<button class="showKey btn btn-default" type="button">Show</button>
 																			</span>
                                   </div>
+                                -->
+
                                 </div>
                               </div>
                               <div class="walletnotice">

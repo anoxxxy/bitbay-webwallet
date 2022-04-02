@@ -2,6 +2,7 @@ var profile_data = "";
 var debug = false;
 var bip39 = new BIP39('en');
 
+
 $(document).ready(function() {
 
   /*get Dynamic Peg info */
@@ -9,11 +10,15 @@ $(document).ready(function() {
   /*get Price and Volume info */
   coinData();
   
+
 	/* open wallet code */
 
 	var explorer_tx = "https://coinb.in/tx/"
 	var explorer_addr = "https://coinb.in/addr/"
 	var explorer_block = "https://coinb.in/block/"
+
+
+
 	$("#openBtn").click(function(){
 		var pass = $("#openPass").val();
 		var pass2 = $("#openPass2").val();
@@ -22,6 +27,8 @@ $(document).ready(function() {
 		var email = email.trim();
 		var walletType = $("#regularwallet").hasClass("active") ? "regular" : "multisig";
 		
+
+
 		profile_data = { 
 		"email" : email,
 		"wallet_type" : walletType,	//regular (login normal address), multisig (login multisig address), key (login with private key)
@@ -2086,13 +2093,17 @@ function drawPieChart(piechart, pegBalanceData) {
 
 				$('#recipients .row.recipient.send-back-reserve-as-change .input-group').addClass('has-warning').attr('title', 'Change back to the user');;
 				$('#recipients .row.recipient.send-back-reserve-as-change input.address').val(userAddress);
-				$('#recipients .row.recipient.send-back-reserve-as-change input.amount').val(sumReserveToSend);
+
+				//if the user edits the change back amount of reserve, then dont touch it!				
+				if (!$('#recipients .row.recipient.send-back-reserve-as-change input.amount').val())
+					$('#recipients .row.recipient.send-back-reserve-as-change input.amount').val(sumReserveToSend);
+
 				$('#recipients .row.recipient.send-back-reserve-as-change button').removeClass('qrcodeScanner');
 				$('#recipients .row.recipient.send-back-reserve-as-change button span').removeClass('glyphicon-camera').addClass('glyphicon-lock').attr('disabled', true);
 
 				$('#recipients .row.recipient.send-back-reserve-as-change input').attr('title', 'Change back to the user!');
 
-				$('#recipients .row.recipient.send-back-reserve-as-change input').attr('disabled', true);
+				$('#recipients .row.recipient.send-back-reserve-as-change input').attr('disabled', false);
 				$('#recipients .row.recipient.send-back-reserve-as-change button').attr('disabled', true);
 				
 
@@ -3560,7 +3571,6 @@ rawSubmitBtn
 			//var regex = /.*\d.*\w.*\D.*/i;
 			//if (!regex.test(str)) {msg= ("bad_char");}
 			
-			
 			if (msg != '') {
 				//$('.checkInputsError').removeClass("hidden");
 				//$('.checkInputsPassword').removeClass("hidden").html('Password: '+msg);
@@ -3727,7 +3737,13 @@ rawSubmitBtn
 									address = multisig["address"];
 									
 									var privkeyaes = CryptoJS.AES.encrypt(keys.wif, s);
+									//console.log('keys.wif: ', keys.wif);
+									//console.log('s: ', s);
+
 									var privkeyaes2 = CryptoJS.AES.encrypt(keys2.wif, s2);
+
+									//console.log('keys2.wif: ', keys.wif);
+									//console.log('s2: ', s2);
 									
 									$("#walletKeys .redeemScript_wallet").val(multisig["redeemScript"]);
 									
@@ -3786,6 +3802,7 @@ rawSubmitBtn
 						qrcode.makeCode("bitbay:"+address);
 
 
+						console.log('keys: ', keys);
 						$("#walletKeys .address").val(address);
 						$("#walletKeys .privkey").val(keys.wif);
 						$("#walletKeys .pubkey").val(keys.pubkey);
@@ -3829,7 +3846,7 @@ rawSubmitBtn
 						}
 					
 				} else {
-					$("#openLoginStatus").html("Your password must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from \"#$€%&\'()*+,-./:;<=>?@[\]^_`{|}~¤¨½§").removeClass("hidden").fadeOut().fadeIn();
+					$("#openLoginStatus").html("Your password must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from \"!#$€%&\'()*+,-./:;<=>?@[\]^_`{|}~¤¨½§").removeClass("hidden").fadeOut().fadeIn();
 				}
 				
 			
