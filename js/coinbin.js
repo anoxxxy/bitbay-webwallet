@@ -213,6 +213,26 @@ document.getElementById('openBtn').addEventListener('click', function () {
 		var walletType = $("#regularwallet").hasClass("active") ? "regular" : "multisig";
 		
 
+		profile_data = { 
+		"email" : email,
+		"wallet_type" : walletType,	//regular (login normal address), multisig (login multisig address), key (login with private key)
+		"remember_me" : remember_me,
+		"signatures" : 1,
+		"passwords" : [
+				{
+					"password" : pass,
+				}
+			]
+		};
+
+		//save the second key 
+		if(pass2 != "") {
+			profile_data.passwords.push({"password" : pass2});
+			profile_data.signatures = 2;
+		}
+
+
+/*
 profile_data = { 
 		"address" : "",
 		"email" : email,
@@ -255,6 +275,7 @@ profile_data = {
 				{"key" : ""}
 			]
 		};
+		*/
 		//checkUserLogin(JSON.parse(profile_data));
 		checkUserLogin(profile_data);
 	});

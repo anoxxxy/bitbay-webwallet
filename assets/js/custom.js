@@ -442,7 +442,7 @@ $(document).ready(function() {
 	
 
 
-  var walletVersion = "1.12";   //is used for human versioning
+  var walletVersion = "1.13";   //is used for human versioning
   var walletVersionCode = "9";  //is used for the update versioning of the wallet app
 
 
