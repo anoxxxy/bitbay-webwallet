@@ -60,13 +60,13 @@ $(document).ready(function() {
     $("#openWalletType").val('regular').trigger('change');
     $("#multisigwallet").removeClass("active");
     $("#regularwallet").addClass("active");    
-    $(".form-openWalletTypeText").text("Regular Wallet");
+    //$(".form-openWalletTypeText").text("Regular Wallet");
   }
   function showMultisigWallet(){
     $("#openWalletType").val('multisig').trigger('change');
     $("#regularwallet").removeClass("active");
     $("#multisigwallet").addClass("active");
-    $(".form-openWalletTypeText").text("Multisig m-of-n Wallet");
+    //$(".form-openWalletTypeText").text("Multisig m-of-n Wallet");
   }  
 	$("#regularwallet,a[href$='#wallet']").on("click", function () {
     showRegularWallet();
@@ -207,14 +207,21 @@ $(document).ready(function() {
         error += validateElem("#openPass","Password");
         error += validateElem("#openPass2","Password2");
         if(error){
-          $("#errormessages").html(error);
+          $("#openLoginStatus").html(error).removeClass("hidden").fadeOut().fadeIn();
+          $("#openLoginStatus").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+
+
+          //$("#errormessages").html(error);
       		return false;          
         }else{
-          $("#errormessages").html("");
+          //$("#errormessages").html("");
           oldClick();          
         }
       } else if(error) {
-        $("#errormessages").html(error);
+        //$("#errormessages").html(error);
+        $("#openLoginStatus").html(error).removeClass("hidden").fadeOut().fadeIn();
+        $("#openLoginStatus").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+
         return false;          
       } else {
         oldClick();

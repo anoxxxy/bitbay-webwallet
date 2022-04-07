@@ -1,6 +1,58 @@
 var profile_data = "";
 var debug = false;
 var bip39 = new BIP39('en');
+/*
+
+	//multisig wallet options
+	function multisigMselect(event) {
+  //var x = document.getElementById("multisigMnumber").value;
+  //document.getElementById("demo").innerHTML = "You selected: " + x;
+  
+  
+  
+  var el = event.target;
+  var val = el.value;
+  alert('tst:  '+val);
+  
+  
+  //re-init the "m-of-N key" select options
+  var multisigNSelect = document.getElementById("multisigWalletNnumber");
+  multisigNSelect.innerHTML = '';
+    //we accept maximum 16 keys for multisig!
+  for(i=val; i<=16; i++) {
+    var option = document.createElement("option");
+    option.text = i;
+    multisigNSelect.add(option);
+  }
+}
+
+*/
+
+
+/*
+
+var values = [];
+$("input[name='openPassTest']").each(function() {
+    values.push(($(this).val()).trim());
+});
+
+
+var values = [];
+var passFields = document.getElementsByName("openPassTest");
+for(var i = 0; i < passFields.length; i++) {
+    values.push((passFields[i].value).trim());
+}
+
+
+		var passwordsArr = [];
+		for (i=0; ;i++) {
+			passwordsArr.push("password" : pass);
+		}
+		*/
+
+
+
+
 
 
 $(document).ready(function() {
@@ -10,6 +62,139 @@ $(document).ready(function() {
   /*get Price and Volume info */
   coinData();
   
+
+/*
+m-of-n address login, deprecated for the moment
+  // multisig wallet login 
+  document.getElementById('multisigWalletMnumber').addEventListener('change', function() {
+  
+  //var x = document.getElementById("multisigMnumber").value;
+  //document.getElementById("demo").innerHTML = "You selected: " + x;
+  
+  
+  
+  
+  var mVal = parseInt(this.value);
+  console.log('m: ' + mVal);
+  
+  
+  //re-init the "m-of-N key" select options
+  var multisigNSelect = document.getElementById("multisigWalletNnumber");
+  var oldNval = parseInt(multisigNSelect.value);
+  
+  console.log('n: ' + multisigNSelect.value);
+  
+  
+    
+    multisigNSelect.innerHTML = '';
+  
+    var walletLoginEl = document.getElementById("wallet")
+    walletLoginEl.innerHTML = "";
+    multisigNSelect.innerHTML = "";
+    var inputPass, inputEmail;
+    var j=1;
+    
+  //we accept maximum 16 keys for multisig wallets!  
+  for(i=0; i<=16; i++) {
+    
+    //n should not be more then 16!
+    if(mVal+i <=16){
+      //add select options for X multisig keys
+      var option = document.createElement("option");
+      option.text = (mVal+i);
+      
+      //set n address to selected if set by user
+      if(parseInt(mVal+i) == oldNval) {
+        option.selected = 'selected';
+        console.log('if selected: ' + multisigNSelect.value);
+       }else{
+         console.log('else selected: ' + parseInt(multisigNSelect.value));
+         console.log('else option.text: ' + parseInt(mVal+i));
+       }
+
+      multisigNSelect.add(option);
+     }
+    
+    
+    //append multisig input fields 
+    if(j <= oldNval || j <= mVal ) {
+      //create input elements for X multisig keys
+      inputPass = document.createElement("input");
+      inputPass.name ="openEmail";
+      inputPass.placeholder = "Password "+ j;
+      
+      inputEmail = document.createElement("input");
+      inputEmail.name ="openEmail";
+      inputEmail.placeholder = "E-mail address "+ j;
+    
+      walletLoginEl.append(inputEmail);
+      walletLoginEl.append(inputPass);
+    }
+    j++;
+
+  }
+
+});
+
+document.getElementById('multisigWalletNnumber').addEventListener('change', function() {
+  console.log('N value: ', this.value);
+  
+  var walletLoginEl = document.getElementById("wallet")
+  walletLoginEl.innerHTML = "";
+  
+  for(i=1; i<=this.value; i++) {
+    
+    inputPass = document.createElement("input");
+    inputPass.name ="openEmail";
+    inputPass.placeholder = "Password "+ i;
+    
+    inputEmail = document.createElement("input");
+    inputEmail.name ="openEmail";
+    inputEmail.placeholder = "E-mail address "+ i;
+    
+    walletLoginEl.append(inputEmail);
+    walletLoginEl.append(inputPass);
+    
+  }
+  
+});
+*/
+
+
+document.getElementById('openBtn').addEventListener('click', function () {
+  console.log("You finally clicked without jQuery");
+  
+  
+  //get passwords
+  var loginPass = [];
+  var loginPassEl = document.getElementsByName("openPass");
+  for(var i = 0; i < loginPassEl.length; i++) {
+    loginPass.push({"password": (loginPassEl[i].value).trim()});
+    
+  }
+  
+  console.log('loginPass: ', loginPass);
+  
+  console.log('loginPass: ' + loginPass[0]["password"]);
+  console.log('loginPass: ' + loginPass[1]["password"]);
+  
+  
+  //get confirmed passwords 
+  var loginPassConfirm = [];
+  var loginPassConfirmEl = document.getElementsByName("openPass-confirm");
+  for(var i = 0; i < loginPassConfirmEl.length; i++) {
+    loginPassConfirm.push({"password": (loginPassConfirmEl[i].value).trim()});
+    
+  }
+  
+  console.log('loginPassConfirm: ', loginPassConfirm);
+  
+  console.log('loginPassConfirm: ' + loginPassConfirm[0]["password"]);
+  console.log('loginPassConfirm: ' + loginPassConfirm[1]["password"]);
+  
+  
+});
+
 
 	/* open wallet code */
 
@@ -28,10 +213,11 @@ $(document).ready(function() {
 		var walletType = $("#regularwallet").hasClass("active") ? "regular" : "multisig";
 		
 
-
-		profile_data = { 
+profile_data = { 
+		"address" : "",
 		"email" : email,
-		"wallet_type" : walletType,	//regular (login normal address), multisig (login multisig address), key (login with private key)
+		"login_type" : "", //"password" (email, password login), "key" login, "mnemonic" login
+		"wallet_type" : walletType,	//regular (login normal address), multisig (login multisig address), key (login with private key), mnemonic (Mnemonic words login)
 		"remember_me" : remember_me,
 		"signatures" : 1,
 		"passwords" : [
@@ -41,6 +227,32 @@ $(document).ready(function() {
 				{
 					"password" : pass2
 				}
+			],
+		"keys" : [
+				{"key" : ""}, 
+				{"key" : ""}
+			]
+		};
+
+
+
+
+		profile_data = { 
+		"email" : email,
+		"wallet_type" : walletType,	//regular (login normal address), multisig (login multisig address), key (login with private key), mnemonic (Mnemonic words login)
+		"remember_me" : remember_me,
+		"signatures" : 1,
+		"passwords" : [
+				{
+					"password" : pass,
+				},
+				{
+					"password" : pass2
+				}
+			],
+		"keys" : [
+				{"key" : ""}, 
+				{"key" : ""}
 			]
 		};
 		//checkUserLogin(JSON.parse(profile_data));
@@ -444,7 +656,6 @@ $(document).ready(function() {
           
           
 					reset_broadcast_progress_bar();
-          return ; //icee
 	
 					// and finally broadcast!
 					tx2.broadcast(function(data){
@@ -2000,7 +2211,7 @@ function drawPieChart(piechart, pegBalanceData) {
 			} else if (((($("#opReturn").is(":checked")) && a.match(/^[a-f0-9]+$/ig)) && a.length<160) && (a.length%2)==0) { // data
 				estimatedTxSize += (a.length / 2) + 1 + 8
 				tx.adddata(a);
-			} else if(a.indexOf("**F**") !== -1 || a.indexOf("6a") !== -1) {	//allow for F-notations for manual transactions
+			} else if(a.indexOf("**F**") !== -1 || a.indexOf("6a") !== -1) {	//allow F-notations for manual transactions
 
 						/*
 						var fnotereplace = a.replace('6a','');
@@ -2013,7 +2224,10 @@ function drawPieChart(piechart, pegBalanceData) {
 						var fnote = "**F**"+out_indexes;
 						*/
 						
+						console.log('a:', a);
 						var getoN = a.split(" ");
+						console.log('getoN: ', getoN);
+
 						getoN[2].replace(/\s/g, '');
 
 						var fnote = "**F**"+String(getoN[2]);
@@ -2076,7 +2290,9 @@ function drawPieChart(piechart, pegBalanceData) {
 			//add an extra output and send it back to the user as change back
 			if(sumReserveToSend){
 
-				var userAddress = $('#redeemFrom').val();
+				//var userAddress = $('#redeemFrom').val();
+				var userAddress = $('#redeemFromAddress a').text();
+
 				sumReserveToSend = parseFloat(sumReserveToSend).toFixed(8);
 
 				if (debug) {
@@ -2635,8 +2851,9 @@ observer.observe(target, config);
 							}
 
 							
+							console.log('redeem', redeem);
 							//Inform about Time Locked Address if found
-							if( redeem.from == 'redeemScript' && redeem.decodedRs.type == "hodl__" ) {
+							if( redeem.from == 'redeemScript' && ((typeof redeem.decodedRs !== 'undefined') && redeem.decodedRs.type == "hodl__" )) {
 								//This is a Time locked address with release date
 								var checkLocktimeBlockdDate = ( redeem.decodedRs.checklocktimeverify >= 500000000 )? (new Date(redeem.decodedRs.checklocktimeverify*1000).toUTCString()) : ("Block height "+redeem.decodedRs.checklocktimeverify);
 								
@@ -2725,7 +2942,6 @@ observer.observe(target, config);
 		$(thisbtn).val('Please wait, loading...').attr('disabled',true);
 
 
-rawSubmitBtn
 		var decodingError = false;
 
 		// check first if the rawTX can be decoded, if not throw error!!

@@ -361,16 +361,30 @@ https://api.latoken.com/v2/ticker
 	}
 
 	/* provide a privkey and return an WIF  */
-	coinjs.privkey2wif = function(h){
+	coinjs.privkey2wif = function(h, compress = true){
 		var r = Crypto.util.hexToBytes(h);
 
-		if(coinjs.compressed==true){
+		if (compress) {
 			r.push(0x01);
+			console.log('compress: ');
 		}
+			/*
+		}
+		if(coinjs.compressed==true && !h.match(/^[a-f0-9]+$/i)){
+			r.push(0x01);
+			console.log('compressed: ');
+		}
+		*/
 
 		r.unshift(coinjs.priv);
+		console.log('r: ', r);
+		
 		var hash = Crypto.SHA256(Crypto.SHA256(r, {asBytes: true}), {asBytes: true});
 		var checksum = hash.slice(0, 4);
+
+		console.log('hash: ', hash);
+		console.log('checksum Crypto.util.bytesToHex: ', Crypto.util.bytesToHex(checksum));
+		
 
 		return coinjs.base58encode(r.concat(checksum));
 	}
@@ -2263,15 +2277,18 @@ https://api.latoken.com/v2/ticker
 	}
 
 	coinjs.random = function(length) {
+		
+		var l = length || 40;
+		/*
 		var r = "";
-		var l = length || 25;
 		var chars = "!$%^&*()_+{}:@~?><|\./;'#][=-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		for(x=0;x<l;x++) {
 			r += chars.charAt(Math.floor(Math.random() * 62));
 		}
 		return r;
+		*/
+
+		return generatePassword(l);
 	}
-
-
 
 })();

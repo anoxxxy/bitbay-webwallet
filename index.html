@@ -233,26 +233,52 @@
                           <option value="multisig">Multisig 2-of-2</option>
                         </select>
                       </div>
-
+<!--
                       <div class="form-group form-openWalletTypeText">
                         Regular Wallet
                       </div>
 
-                      <div class="form-group ">
-                        <select id="multisigWalletMnumber" onChange="multisigMselect(event)">
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                        </select>
-                        
-                        <select id="multisigWalletNnumber" onChange="multisigNselect(event)">
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                        </select>
-                    </div>
+  m-of-n multisig login, deprecated for now
+<div class="form-group ">
+  <select id="multisigWalletMnumber">
+    <option>1</option>
+    <option selected>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+    <option>7</option>
+    <option>8</option>
+    <option>9</option>
+    <option>10</option>
+    <option>11</option>
+    <option>12</option>
+    <option>13</option>
+    <option>14</option>
+    <option>15</option>
+    <option>16</option>
+  </select>
+  
+  <select id="multisigWalletNnumber">
+    <option>1</option>
+    <option selected>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+    <option>7</option>
+    <option>8</option>
+    <option>9</option>
+    <option>10</option>
+    <option>11</option>
+    <option>12</option>
+    <option>13</option>
+    <option>14</option>
+    <option>15</option>
+    <option>16</option>
+  </select>
+</div>
+-->
 
                       <div class="form-group form-email">
                         <input id="openEmail" name="openEmail" type="email" class="form-control confirm-email" placeholder="Email Address" required autofocus>
@@ -273,13 +299,13 @@
 													</span>
                       </div>
                       <div class="form-group input-group form-password2 hidden">
-                        <input id="openPass2" type="password" class="form-control" placeholder="Password2">
+                        <input id="openPass2" name="openPass" type="password" class="form-control" placeholder="Password2">
                         <span class="input-group-btn">
 														<button class="showKey btn btn-default" type="button">Show</button>
 													</span>
                       </div>
                       <div class="form-group input-group form-password2-confirm hidden">
-                        <input id="openPass2-confirm" type="password" class="form-control confirm-input" placeholder="Password2 Confirm" confirm="#openPass2">
+                        <input id="openPass2-confirm" name="openPass-confirm" type="password" class="form-control confirm-input" placeholder="Password2 Confirm" confirm="#openPass2">
                         <span class="input-group-btn">
 														<button class="showKey btn btn-default" type="button">Show</button>
 													</span>
