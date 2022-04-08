@@ -846,7 +846,6 @@ async function init_broadcast_progress_bar(txinputs_total, manualTransaction=1) 
 	$("#walletSendFailTransaction textarea").val("");
 								
 	$(".broadcast-process").removeClass("hidden");
-	var profile_data = HTML5.sessionStorage('profile_data').get();
 	var totalSignatures;
 
 	if(manualTransaction == 1){
@@ -1457,6 +1456,7 @@ function drawPieChart(piechart, pegBalanceData) {
 		} else {
 			$("#aes256passStatus").removeClass("hidden");
 		}
+
 		$("#newPrivKeyEnc").val(CryptoJS.AES.encrypt(coin.wif, $("#aes256pass").val())+'');
 
 	});
