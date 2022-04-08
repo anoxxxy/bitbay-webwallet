@@ -145,7 +145,7 @@ $(document).ready(function() {
     print.push("<h3>Password</h2>");
     print.push("<div>" + safe_tags(profile_data.passwords[0].password) + "</div>");
 
-    if(profile_data.passwords[1].password){
+    if(profile_data.passwords[1].password !== undefined){
       print.push("<h3>Password2</h2>");
       print.push("<div>" + safe_tags(profile_data.passwords[1].password) + "</div>");
     }
