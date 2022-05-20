@@ -593,6 +593,21 @@ $('.generatePassword').on("click", function () {
       $("#newMnemonicxprv").val("");
     }
 
+    if($el[0].dataset.inputFor == 'HDBrainwallet') {
+      $("#newHDxpub").val("");
+      $("#newHDxprv").val("");
+    }
+
+    if($el[0].dataset.inputFor == 'brainwallet') {
+      $("#newBitcoinAddress").val("");
+      $("#newPubKey").val("");
+      $("#newPrivKey").val("");
+      
+    }
+
+    
+
+
     var inputElPass = $el.attr( "data-input-for");
     $("#"+inputElPass).val(generatePassword());
   });

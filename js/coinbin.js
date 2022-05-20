@@ -1456,16 +1456,22 @@ function drawPieChart(piechart, pegBalanceData) {
 		} else {
 			$("#aes256passStatus").removeClass("hidden");
 		}
+		//var icee = CryptoJS.AES.encrypt(coin.wif, 22+'');
+		
+		//$("#newPrivKeyEnc").val(icee+' hejsan');
 
 		$("#newPrivKeyEnc").val(CryptoJS.AES.encrypt(coin.wif, $("#aes256pass").val())+'');
 
 	});
 
-	$("#newBrainwallet").click(function(){
+	$("#newBrainwalletCheck").click(function(){
 		if($(this).is(":checked")){
 			$("#brainwallet").removeClass("hidden");
+			$("#brainwallet").next().removeClass("hidden")
+
 		} else {
 			$("#brainwallet").addClass("hidden");
+			$("#brainwallet").next().addClass("hidden")
 		}
 	});
 
@@ -1687,12 +1693,16 @@ function drawPieChart(piechart, pegBalanceData) {
 
 	});
 
-	$("#newHDBrainwallet").click(function(){
+	$("#newHDBrainwalletCheck").click(function(){
 		if($(this).is(":checked")){
 			$("#HDBrainwallet").removeClass("hidden");
+			$("#HDBrainwallet").next().removeClass("hidden")
+
 		} else {
 			$("#HDBrainwallet").addClass("hidden");
+			$("#HDBrainwallet").next().addClass("hidden")
 		}
+
 	});
 
 	

@@ -362,11 +362,18 @@ max-width: calc(100% - 100px);
 	font-weight: 500;
 }
 .showKey,
-.showKey:focus {
+.showKey:focus,
+.input-group-btn > .btn,
+.input-group-btn > .btn:focus {
 	border: 1px solid white;
 	border-radius: 0px;	
 	background: white;
 }
+.input-group-btn > .btn:hover {
+background-color: #e6e6e6;
+border-color: rgba(0,0,0,0.1);
+}
+
 
 /*
 *    general 

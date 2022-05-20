@@ -58,7 +58,8 @@
   <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
 
   
-
+  
+  <script type="text/javascript" src="js/aes-js.js"></script>
   <script type="text/javascript" src="js/crypto-min.js"></script>
   <script type="text/javascript" src="js/crypto-sha256.js"></script>
   <script type="text/javascript" src="js/crypto-sha256-hmac.js"></script>
@@ -681,10 +682,17 @@
               <input type="checkbox" id="newCompressed" class="checkbox-inline" checked> Compress <span class="text-muted">(recommended)</span></label>
           </div>
           <div class="checkbox">
-            <label>
-              <input type="checkbox" id="newBrainwallet" class="checkbox-inline"> Custom Seed or Brain Wallet</label>
-            <input type="text" class="form-control hidden" id="brainwallet">
+            <label><input type="checkbox" id="newBrainwalletCheck" class="checkbox-inline"> Custom Seed or Brain Wallet</label>
+            
+            <div class="input-group" data-original-title="" title="">
+              <input type="text" class="form-control hidden" id="brainwallet">
+              <span class="input-group-btn hidden" data-original-title="" title="">
+                  <button class="btn btn-default generatePassword" type="button" data-input-for="brainwallet" data-original-title="" title="">Generate Password</button>
+                </span>
+            </div>
           </div>
+
+
 
           <div class="checkbox">
             <label>
@@ -953,10 +961,17 @@
           <p>You can use the advanced options below to generate different kinds of master addresses.</p>
 
           <div class="checkbox">
-            <label>
-              <input type="checkbox" id="newHDBrainwallet" class="checkbox-inline"> Custom Seed or Brain Wallet</label>
-            <input type="text" class="form-control hidden" id="HDBrainwallet">
+            <label><input type="checkbox" id="newHDBrainwalletCheck" class="checkbox-inline"> HD Password (recommended)</label>
+            
+            <div class="input-group" data-original-title="" title="">
+              <input type="text" class="form-control hidden" id="HDBrainwallet">
+              <span class="input-group-btn hidden" data-original-title="" title="">
+                  <button class="btn btn-default generatePassword" type="button" data-input-for="HDBrainwallet" data-original-title="" title="">Generate Password</button>
+                </span>
+            </div>
           </div>
+
+          
 
           <input type="button" class="btn-flatbay " value="Generate" id="newHDKeysBtn">
         </div>
@@ -1002,15 +1017,12 @@
           <div class="checkbox">
             <label><input type="checkbox" id="newMnemonicBrainwalletCheck" class="checkbox-inline"> BIP39 Password (recommended)</label>
             
-
             <div class="input-group" data-original-title="" title="">
               <input type="text" class="form-control hidden" id="MnemonicBrainwallet">
               <span class="input-group-btn hidden" data-original-title="" title="">
                   <button class="btn btn-default generatePassword" type="button" data-input-for="MnemonicBrainwallet" data-original-title="" title="">Generate Password</button>
                 </span>
             </div>
-
-
           </div>
 
           <input type="button" class="btn-flatbay " value="Generate" id="newMnemonicKeysBtn">
