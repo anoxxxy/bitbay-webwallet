@@ -233,48 +233,32 @@ document.getElementById('openBtn').addEventListener('click', function () {
 
 
 /*
+old: 
+profile_data:"{"email":"email@test.com","wallet_type":"multisig","remember_me":"true","signatures":2,"passwords":[{"password":"pass1"},{"password":"pass2"}]}"
+
+
 profile_data = { 
 		"address" : "",
 		"email" : email,
-		"login_type" : "", //"password" (email, password login), "key" login, "mnemonic" login
-		"wallet_type" : walletType,	//regular (login normal address), multisig (login multisig address), key (login with private key), mnemonic (Mnemonic words login)
+		"login_type" : "", //"password" (email, password login), "private_key" login, "mnemonic" login, "hdmaster" login
+		"wallet_type" : walletType,	//regular (login normal address), multisig
 		"remember_me" : remember_me,
-		"signatures" : 1,
+		"pubkey_sorted": false,	//it must be sorted if user wants to import to the Client Wallet
+		"signatures" : 1,	//total signatures/private keys needs for signing a transaction!
 		"passwords" : [
-				{
-					"password" : pass,
-				},
-				{
-					"password" : pass2
-				}
+				{"password" : pass},
+				{"password" : pass2}
 			],
-		"keys" : [
+		"private_keys" : [
+				{"key" : ""}, 
+				{"key" : ""}
+			],
+		"pub_keys" : [
 				{"key" : ""}, 
 				{"key" : ""}
 			]
 		};
 
-
-
-
-		profile_data = { 
-		"email" : email,
-		"wallet_type" : walletType,	//regular (login normal address), multisig (login multisig address), key (login with private key), mnemonic (Mnemonic words login)
-		"remember_me" : remember_me,
-		"signatures" : 1,
-		"passwords" : [
-				{
-					"password" : pass,
-				},
-				{
-					"password" : pass2
-				}
-			],
-		"keys" : [
-				{"key" : ""}, 
-				{"key" : ""}
-			]
-		};
 		*/
 		//checkUserLogin(JSON.parse(profile_data));
 		checkUserLogin(profile_data);
@@ -299,8 +283,8 @@ profile_data = {
 		$("#openPass2-confirm").val("");
 		
 		//Menu Account Info
-		$(".walletEmail").text("");
-    $(".walletEmail").attr("data-original-title", "");
+		$(".walletAddress").text("");
+    $(".walletAddress").attr("data-original-title", "");
 		$(".walletBalance").text("");
 		$(".topPanel .walletBalance").text("You are not logged in");
 		$(".walletBalanceLiquid").text("");
@@ -1441,7 +1425,7 @@ function drawPieChart(piechart, pegBalanceData) {
 		if($("#newCompressed").is(":checked")){
 			coinjs.compressed = true;
 		}
-		var s = ($("#newBrainwallet").is(":checked")) ? $("#brainwallet").val() : null;
+		var s = ($("#newBrainwalletCheck").is(":checked")) ? $("#brainwallet").val() : null;
 		var coin = coinjs.newKeys(s);
 		$("#newBitcoinAddress").val(coin.address);
 		$("#newPubKey").val(coin.pubkey);
@@ -3309,6 +3293,9 @@ observer.observe(target, config);
 
 	function decodePrivKey(){
 		var wif = $("#verifyScript").val();
+		if(wif.length==64){
+			wif = coinjs.privkey2wif(wif);
+		}
 		if(wif.length==51 || wif.length==52){
 			try {
 				var w2address = coinjs.wif2address(wif);
@@ -3361,7 +3348,7 @@ observer.observe(target, config);
 				$("#verifyHDaddress .version").val('0x'+(hd.version).toString(16));
 				$("#verifyHDaddress .child_index").val(hd.child_index);
 				$("#verifyHDaddress .hdwifkey").val((hd.keys.wif)?hd.keys.wif:'');
-				$("#verifyHDaddress .key_type").html((((hd.depth==0 && hd.child_index==0)?'Master':'Derived')+' '+hd.type).toLowerCase());
+				$("#verifyHDaddress .key_type").html((((hd.depth==0 && hd.child_index==0)?'Master':'Derived')+' '+hd.type));
 				$("#verifyHDaddress .parent_fingerprint").val(Crypto.util.bytesToHex(hd.parent_fingerprint));
 				$("#verifyHDaddress .derived_data table tbody").html("");
 				deriveHDaddress();
@@ -4036,7 +4023,7 @@ observer.observe(target, config);
 						}
 
 						$(".amountCoinSymbol").text(coinjs.symbol);
-						$("#walletMail").html(email);
+						//$("#walletMail").html(email);
 						$("#walletAddress").html(address);
 						$("#walletAddressExplorer").html(address);
 						//$("#walletAddressExplorer").attr('href','http://explorer.bitbay.market/address/'+address);
@@ -4071,18 +4058,18 @@ observer.observe(target, config);
 							//Menu Account Info
 							$(".accountSessionLogin").addClass("hidden");
 							$(".accountSessionLogout").removeClass("hidden");
-							$(".walletEmail").text(email);
-              $(".walletEmail").attr("data-original-title", email);
+							$(".walletAddress").text(address);
+              $(".walletAddress").attr("data-original-title", "Wallet Address");
 								
 							$("#openLogin").hide();
 							$("#openWallet").removeClass("hidden").show();
 							//giorgosk
 							$("body").addClass("loggedin").removeClass("loggedout");
 
-							//check if address is multisig, then sign with second private key
-							//var profile_data;
+							//update global variable for user data
 							profile_data = HTML5.sessionStorage('profile_data').get();
 				
+							//update user balance and set loop for updating the users balance!
 							walletBalance();
 							checkBalanceLoop();
               

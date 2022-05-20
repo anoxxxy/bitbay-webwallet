@@ -361,10 +361,10 @@ https://api.latoken.com/v2/ticker
 	}
 
 	/* provide a privkey and return an WIF  */
-	coinjs.privkey2wif = function(h, compress = true){
+	coinjs.privkey2wif = function(h){
 		var r = Crypto.util.hexToBytes(h);
 
-		if (compress) {
+		if (coinjs.compressed) {
 			r.push(0x01);
 			console.log('compress: ');
 		}
