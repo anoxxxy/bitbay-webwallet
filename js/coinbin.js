@@ -1669,7 +1669,7 @@ function drawPieChart(piechart, pegBalanceData) {
 
 	$("#newHDKeysBtn").click(function(){
 		coinjs.compressed = true;
-		var s = ($("#newHDBrainwallet").is(":checked")) ? $("#HDBrainwallet").val() : null;
+		var s = ($("#newHDBrainwalletCheck").is(":checked")) ? $("#HDBrainwallet").val() : null;
 		var hd = coinjs.hd();
 		var pair = hd.master(s);
 		$("#newHDxpub").val(pair.pubkey);
