@@ -1523,11 +1523,15 @@ function drawPieChart(piechart, pegBalanceData) {
 		if(($("#multisigPubKeys .pubkey").parent().hasClass('has-error')==false) && $("#releaseCoins").parent().hasClass('has-error')==false){
 			var sigsNeeded = $("#releaseCoins option:selected").html();
 			var multisig =  coinjs.pubkeys2MultisigAddress(keys, sigsNeeded);
-			$("#multiSigData .address").val(multisig['address']);
-			$("#multiSigData .script").val(multisig['redeemScript']);
-			$("#multiSigData .scriptUrl").val(document.location.origin+''+document.location.pathname+'?verify='+multisig['redeemScript']+'#verify');
-			$("#multiSigData").removeClass("hidden").addClass('show').fadeIn();
-			$("#releaseCoins").removeClass('has-error');
+			if(multisig.size <= 520){
+				$("#multiSigData .address").val(multisig['address']);
+				$("#multiSigData .script").val(multisig['redeemScript']);
+				$("#multiSigData .scriptUrl").val(document.location.origin+''+document.location.pathname+'?verify='+multisig['redeemScript']+'#verify');
+				$("#multiSigData").removeClass('hidden').addClass('show').fadeIn();
+				$("#releaseCoins").removeClass('has-error');
+			} else {
+				$("#multiSigErrorMsg").html('<span class="glyphicon glyphicon-exclamation-sign"></span> Your generated redeemscript is too large (>520 bytes) it can not be used safely').fadeIn();
+			}
 		} else {
 			$("#multiSigErrorMsg").html('<span class="glyphicon glyphicon-exclamation-sign"></span> One or more public key is invalid!').fadeIn();
 		}
@@ -3347,13 +3351,16 @@ observer.observe(target, config);
 			var hex_cmp_pub = Crypto.util.bytesToHex((coinjs.numToBytes(coinjs.hdkey.pub,4)).reverse());
 			if(hex == hex_cmp_prv || hex == hex_cmp_pub){
 				var hd = coinjs.hd(s);
+				console.log('hd: ', hd);
 				$("#verifyHDaddress .hdKey").html(s);
 				$("#verifyHDaddress .chain_code").val(Crypto.util.bytesToHex(hd.chain_code));
 				$("#verifyHDaddress .depth").val(hd.depth);
 				$("#verifyHDaddress .version").val('0x'+(hd.version).toString(16));
 				$("#verifyHDaddress .child_index").val(hd.child_index);
 				$("#verifyHDaddress .hdwifkey").val((hd.keys.wif)?hd.keys.wif:'');
-				$("#verifyHDaddress .key_type").html((((hd.depth==0 && hd.child_index==0)?'master':'derived')+' '+hd.type + ' key'));
+				$("#verifyHDaddress .hdhexkey").val((hd.keys.privkey)?hd.keys.privkey:'');
+				
+				$("#verifyHDaddress .key_type").html((((hd.depth==0 && hd.child_index==0)?'Master':'Derived')+' '+hd.type + ' key'));
 				$("#verifyHDaddress .parent_fingerprint").val(Crypto.util.bytesToHex(hd.parent_fingerprint));
 				$("#verifyHDaddress .derived_data table tbody").html("");
 				deriveHDaddress();
