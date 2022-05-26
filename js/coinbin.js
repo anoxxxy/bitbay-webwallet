@@ -3728,6 +3728,13 @@ observer.observe(target, config);
 		$("#coinjs_multisig").val(o[2]);
 		$("#coinjs_hdpub").val(o[3]);
 		$("#coinjs_hdprv").val(o[4]);
+		/*
+		$("#coinjs_pub").val(coinjs.pub);
+		$("#coinjs_priv").val(coinjs.priv);
+		$("#coinjs_multisig").val(coinjs.multisig);
+		$("#coinjs_hdpub").val(coinjs.hdkey.pub);
+		$("#coinjs_hdprv").val(coinjs.hdkey.prv);
+		*/
 
 		$("#coinjs_extratimefield").val(o[7]);
 		$("#coinjs_symbol").val(o[8]);
