@@ -250,12 +250,17 @@ profile_data = {
 				{"password" : pass2}
 			],
 		"private_keys" : [
-				{"key" : ""}, 
+				{"key" : ""},
 				{"key" : ""}
 			],
 		"pub_keys" : [
-				{"key" : ""}, 
+				{"key" : ""},
 				{"key" : ""}
+			],
+			"deterministic" : [
+				{"xpub" : ""},
+				{"xprv" : ""},
+				{"seed" : ""}
 			]
 		};
 
@@ -3348,7 +3353,7 @@ observer.observe(target, config);
 				$("#verifyHDaddress .version").val('0x'+(hd.version).toString(16));
 				$("#verifyHDaddress .child_index").val(hd.child_index);
 				$("#verifyHDaddress .hdwifkey").val((hd.keys.wif)?hd.keys.wif:'');
-				$("#verifyHDaddress .key_type").html((((hd.depth==0 && hd.child_index==0)?'Master':'Derived')+' '+hd.type));
+				$("#verifyHDaddress .key_type").html((((hd.depth==0 && hd.child_index==0)?'master':'derived')+' '+hd.type + ' key'));
 				$("#verifyHDaddress .parent_fingerprint").val(Crypto.util.bytesToHex(hd.parent_fingerprint));
 				$("#verifyHDaddress .derived_data table tbody").html("");
 				deriveHDaddress();

@@ -451,6 +451,7 @@ no#header {
 .key_type {
 	color: #6456ab;
 	font-weight: bold;
+	text-transform:capitalize;
 }
 input[type="checkbox"] {
 	margin: 0 5px 0 0;
