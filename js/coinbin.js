@@ -3723,18 +3723,21 @@ observer.observe(target, config);
 		}
 
 		// deal with the reset
+		/*
 		$("#coinjs_pub").val(o[0]);
 		$("#coinjs_priv").val(o[1]);
 		$("#coinjs_multisig").val(o[2]);
 		$("#coinjs_hdpub").val(o[3]);
 		$("#coinjs_hdprv").val(o[4]);
-		/*
-		$("#coinjs_pub").val(coinjs.pub);
-		$("#coinjs_priv").val(coinjs.priv);
-		$("#coinjs_multisig").val(coinjs.multisig);
-		$("#coinjs_hdpub").val(coinjs.hdkey.pub);
-		$("#coinjs_hdprv").val(coinjs.hdkey.prv);
 		*/
+
+		$("#coinjs_pub").val('0x'+(coinjs.pub).toString(16));
+		$("#coinjs_priv").val('0x'+(coinjs.priv).toString(16));
+		$("#coinjs_multisig").val('0x'+(coinjs.multisig).toString(16));
+
+		$("#coinjs_hdpub").val('0x'+(coinjs.hdkey.pub).toString(16));
+		$("#coinjs_hdprv").val('0x'+(coinjs.hdkey.prv).toString(16));	
+
 
 		$("#coinjs_extratimefield").val(o[7]);
 		$("#coinjs_symbol").val(o[8]);

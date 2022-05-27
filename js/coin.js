@@ -18,14 +18,8 @@
 	coinjs.priv = 0x99;
 	coinjs.multisig = 0x55;
 	coinjs.multisig_str = "55";
-	coinjs.hdkey = {'prv':0x02cfbede, 'pub':0x02cfbf60};
+	coinjs.hdkey = {'prv':0x02cfbf60, 'pub':0x02cfbede};
 	
-	/*
-	coinjs.pub = 0x00;
-	coinjs.priv = 0x80;
-	coinjs.multisig = 0x05;
-	coinjs.hdkey = {'prv':0x0488ade4, 'pub':0x0488b21e};
-*/
 	coinjs.compressed = false;
 
 	//For Bitbay, Blackcoin
