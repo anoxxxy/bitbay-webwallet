@@ -42,6 +42,8 @@
   <!-- ****** faviconit.com favicons ****** -->
 
   <link rel="stylesheet" href="assets/css/themes/Cerulean/bootstrap.min.css" media="screen" id="bootstrap-css">
+
+  <link rel="stylesheet" href="assets/css/icons/bootstrap-icons_v1.83.css">
   <link rel="stylesheet" href="assets/css/bootstrap-datetimepicker.min.css">
   <link rel="stylesheet" href="assets/css/pnotify.custom.min.css" media="all">
   <link rel="stylesheet" href="assets/css/style.css?v=1.13" media="screen">
@@ -164,7 +166,7 @@
             <div class="col-md-4 col-sm-4 col-xs-12">
               <div class="panel panel-default priceTracking">
                 <div class="panel-body coinPrice">
-                    <p><span class="glyphicon glyphicon-briefcase"></span> Price (Ratedb - Github )</p>
+                    <p><i class="bi bi-coin"></i> Price (Ratedb - Github )</p>
                     <div class="coin_price">
                       <h4><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></h4>
                         <div class="bayLPrice">
@@ -181,7 +183,7 @@
             <div class="col-md-4 col-sm-4 col-xs-6">
               <div class="panel panel-default">
                 <div class="panel-body pegIndex">
-                  <h4 title="Peg index: seems to go up lately..."><span class="glyphicon glyphicon-scale"></span> <span class="currentPegIndex"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> <span class="glyphicon glyphicon-arrow-right"></span></h4>
+                  <h4 title="Peg index: seems to go up lately..."><i class="bi bi-speedometer2"></i> <span class="currentPegIndex"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> <span class="glyphicon glyphicon-arrow-right"></span></h4>
                   <p class="nextPegIndex">Next Peg index is 0</p> 
                 </div>
               </div>
@@ -190,7 +192,7 @@
             <div class="col-md-4 col-sm-4 col-xs-6">
               <div class="panel panel-default">
                 <div class="panel-body accountInfo">
-                  <h4><span class="glyphicon glyphicon-user"></span> <span class="walletAddress"></span> <a href="#wallet" class="walletLogout logouthide" role="button" data-destroy="true"><span title="Logout" class="glyphicon glyphicon-log-out hide logoutIcon"></span></a> </h4>
+                  <h4><i class="bi bi-person-fill"></i> <span class="walletAddress"></span> <a href="#wallet" class="walletLogout logouthide" role="button" data-destroy="true"><span title="Logout" class="glyphicon glyphicon-log-out hide logoutIcon"></span></a> </h4>
                   <p><span class="walletBalance"><a href="#wallet" data-toggle="tab">You are not logged in</a></span></p> 
                 </div>
               </div>
@@ -221,7 +223,7 @@
 
 
           <!-- Login Multistep Wizard Box!-->
-          <div class="">
+          
            <div class="row flex justify-content-center loginhide">
             
             <div class="col-md-6 login-container">
@@ -241,7 +243,7 @@
             <section class="login-box multistep_progress_bar" data-wallet-login-multistep-wizard="options">
               <div data-multistep-wizard-step="2" class="callout callout-no-border callout-hover no-bottom-border-radius no-bottom-margin cursor-pointer p-2">
                 <div class="d-flex">
-                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-briefcase align-self-center"></span></div> 
+                  <div class="logo-wallet-icon d-flex align-self-center"><i class="bi bi-wallet-fill"></i></div> 
                   <div class="d-flex flex-column text-left align-self-center p-l-2">
                     <span class="font-heading font-semibold">Regular Wallet</span> 
                     <span class="font-body-small text-gray">Connect using browser wallet</span>
@@ -252,7 +254,7 @@
               
               <div data-multistep-wizard-step="3" class="callout callout-no-border callout-hover no-top-margin no-bottom-margin  no-bottom-border-radius no-top-border-radius no-border-radius cursor-pointer p-2">
                 <div class="d-flex">
-                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-briefcase align-self-center"></span></div> 
+                  <div class="logo-wallet-icon d-flex align-self-center"><i class="bi bi-wallet-fill"></i></div> 
                   <div class="d-flex flex-column text-left align-self-center p-l-2">
                     <span class="font-heading font-semibold">Multisignature Wallet</span>
                     <span class="font-body-small text-gray">2-of-2 Wallet Address!</span>
@@ -263,7 +265,7 @@
               
               <div data-multistep-wizard-step="4" class="callout callout-no-border callout-hover no-top-margin no-bottom-margin  no-bottom-border-radius no-top-border-radius no-border-radius cursor-pointer p-2">
                 <div class="d-flex">
-                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-qrcode align-self-center"></span></div> 
+                  <div class="logo-wallet-icon d-flex align-self-center"><i class="bi bi-key-fill"></i></div> 
                   <div class="d-flex flex-column text-left align-self-center p-l-2">
                     <span class="font-heading font-semibold">Login with Private Key</span>
                     <span class="font-body-small text-gray">Connect using private key!</span>
@@ -274,7 +276,7 @@
               
               <div data-multistep-wizard-step="5" class="callout callout-no-border callout-hover no-top-margin no-bottom-margin  no-bottom-border-radius no-top-border-radius no-border-radius cursor-pointer p-2">
                 <div class="d-flex">
-                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-open align-self-center"></span></div> 
+                  <div class="logo-wallet-icon d-flex align-self-center"><i class="bi bi-upload"></i></div> 
                   <div class="d-flex flex-column text-left align-self-center p-l-2">
                     <span class="font-heading font-semibold">Import Wallet</span>
                     <span class="font-body-small text-gray">Import your wallet backup!</span>
@@ -285,7 +287,7 @@
               
               <div data-multistep-wizard-step="6" class="callout callout-no-border callout-hover no-top-margin no-top-border-radius cursor-pointer p-2">
                 <div class="d-flex">
-                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-cog align-self-center"></span></div> 
+                  <div class="logo-wallet-icon d-flex align-self-center"><i class="bi bi-gear-fill"></i></div> 
                   <div class="d-flex flex-column text-left align-self-center p-l-2">
                     <span class="font-heading font-semibold">Advanced</span>
                     <span class="font-body-small text-gray">For experienced users!</span>
@@ -496,10 +498,10 @@
         </div>
     </section>
     <section class="callout callout-no-border m-1 login-box hide" data-wallet-login-multistep-wizard="import_wallet">
-      <p>Sorry but I am Under Construction. /Regards Alice and Bob!</p>
+      <p>Sorry but I am Under Construction. <br><br>/Regards Alice and Bob!</p>
     </section>
     <section class="callout callout-no-border m-1 login-box hide" data-wallet-login-multistep-wizard="advanced">
-      <p>Sorry but I am Under Construction. /Regards Alice and Bob!</p>
+      <p>Sorry but I am Under Construction. <br><br>/Regards Alice and Bob!</p>
     </section>
     <section class="callout callout-no-border m-1 login-box hide" data-wallet-login-multistep-wizard="disclamer_wizard">
       <p>General condtitions</p>
@@ -522,7 +524,7 @@
           
             
             </div>
-          </div>
+          
 
 
 
@@ -1878,7 +1880,7 @@
                 <div class="col-md-4 col-sm-4 col-xs-6">
                   <div class="panel panel-default">
                     <div class="panel-body pegIndex">
-                      <h4 title="Peg index: seems to go up lately..."><span class="glyphicon glyphicon-scale"></span> <span class="currentPegIndex"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> <span class="glyphicon glyphicon-arrow-right"></span></h4>
+                      <h4 title="Peg index: seems to go up lately..."><i class="bi bi-speedometer2"></i> <span class="currentPegIndex"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> <span class="glyphicon glyphicon-arrow-right"></span></h4>
                       <p class="nextPegIndex">Next Peg index is 0</p> 
                     </div>
                     

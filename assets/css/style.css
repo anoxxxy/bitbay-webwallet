@@ -416,10 +416,13 @@ no#header {
 }
 @media (max-width: 550px){
 	.form-signin-password {
-	  padding: 40px 20px;	
+	  padding: 3px;	
 	}
 	.form-control, .input-group {
 		margin-bottom: 10px;
+	}
+	.box-body {
+		padding:  0px !important;
 	}
 }
 .form-wallettype {
@@ -1089,6 +1092,7 @@ fieldset[disabled] .form-control.can-copy {
   right: 0;
   bottom: 0;
   left: 0;
+  border-radius: 0 !important;
 }
 #footer a {
 	color: #999999;
@@ -1185,6 +1189,11 @@ fieldset[disabled] .form-control.can-copy {
 	background: #f7f7f7;
 	padding: 20px 30px 20px 30px;
 }
+
+#wallet.tab-pane.tab-content.active{
+	padding: 10px 15px;
+}
+
 .loggedout #wallet.tab-content.active {
 	background: transparent;
 	/*background: #6e5fb7;*/
@@ -2036,7 +2045,7 @@ p {
 /* login */
 .login-container {
   padding: 0;
-  min-width: 450px;
+  /*min-width: 450px;*/
   max-width: 450px;
 }
 .login-container .box-header > .box-title {

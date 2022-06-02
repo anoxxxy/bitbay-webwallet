@@ -509,8 +509,8 @@ $(document).ready(function() {
 	
 
 
-  var walletVersion = "1.135";   //is used for human versioning
-  var walletVersionCode = "9";  //is used for the update versioning of the wallet app
+  var walletVersion = "1.15";   //is used for human versioning
+  var walletVersionCode = "10";  //is used for the update versioning of the wallet app
 
 
   //render client version text

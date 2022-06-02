@@ -277,7 +277,7 @@ document.querySelector('#openBtnPrivateKey').addEventListener('click', function 
 	}
 
 	//***Error message handling!
-	$('section.login-box[data-wallet-login-multistep-wizard=private_key] .walletLoginStatus').prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+	$('section.login-box[data-wallet-login-multistep-wizard=private_key] .walletLoginStatus').prepend('<i class="bi bi-exclamation-triangle-fill"></i> ');
 	$('section.login-box[data-wallet-login-multistep-wizard=private_key] .walletLoginStatus').html(errorMessage).removeClass("hidden").removeClass("hide").fadeOut().fadeIn();
 	return ;
 
@@ -418,7 +418,7 @@ document.querySelector('.loginButton').addEventListener('click', function () {
 	}
 
 	//***Error message handling!
-	$(".walletLoginStatus").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+	$(".walletLoginStatus").prepend('<i class="bi bi-exclamation-triangle-fill"></i> ');
 	$(".walletLoginStatus").html(errorMessage).removeClass("hidden").removeClass("hide").fadeOut().fadeIn();
 	return ;
 
@@ -1174,7 +1174,7 @@ async function init_broadcast_progress_bar(txinputs_total, manualTransaction=1) 
 			}
 		} else {
 			$("#walletSpend .has-error").fadeOut().fadeIn();
-			$("#walletSendStatus").removeClass("hidden").html('<span class="glyphicon glyphicon-exclamation-sign"></span> One or more input has an error');
+			$("#walletSendStatus").removeClass("hidden").html('<i class="bi bi-exclamation-triangle-fill"></i> One or more input has an error');
 		}
 	});
 
@@ -1735,7 +1735,7 @@ function drawPieChart(piechart, pegBalanceData) {
 
 		if((isNaN($("#releaseCoins option:selected").html())) || ((!isNaN($("#releaseCoins option:selected").html())) && ($("#releaseCoins option:selected").html()>$("#multisigPubKeys .pubkey").length || $("#releaseCoins option:selected").html()*1<=0 || $("#releaseCoins option:selected").html()*1>8))){
 			$("#releaseCoins").parent().addClass('has-error');
-			$("#multiSigErrorMsg").html('<span class="glyphicon glyphicon-exclamation-sign"></span> Minimum signatures required is greater than the amount of public keys provided').fadeIn();
+			$("#multiSigErrorMsg").html('<i class="bi bi-exclamation-triangle-fill"></i> Minimum signatures required is greater than the amount of public keys provided').fadeIn();
 			return false;
 		}
 
@@ -1759,10 +1759,10 @@ function drawPieChart(piechart, pegBalanceData) {
 				$("#multiSigData").removeClass('hidden').addClass('show').fadeIn();
 				$("#releaseCoins").removeClass('has-error');
 			} else {
-				$("#multiSigErrorMsg").html('<span class="glyphicon glyphicon-exclamation-sign"></span> Your generated redeemscript is too large (>520 bytes) it can not be used safely').fadeIn();
+				$("#multiSigErrorMsg").html('<i class="bi bi-exclamation-triangle-fill"></i> Your generated redeemscript is too large (>520 bytes) it can not be used safely').fadeIn();
 			}
 		} else {
-			$("#multiSigErrorMsg").html('<span class="glyphicon glyphicon-exclamation-sign"></span> One or more public key is invalid!').fadeIn();
+			$("#multiSigErrorMsg").html('<i class="bi bi-exclamation-triangle-fill"></i> One or more public key is invalid!').fadeIn();
 		}
 	});
 
@@ -1890,10 +1890,10 @@ function drawPieChart(piechart, pegBalanceData) {
 	            $("#timeLockedData .scriptUrl").val(document.location.origin+''+document.location.pathname+'?verify='+hodl['redeemScript']+'#verify');
 	            $("#timeLockedData").removeClass("hidden").addClass('show').fadeIn();
 	        } catch(e) {
-	        	$("#timeLockedErrorMsg").html('<span class="glyphicon glyphicon-exclamation-sign"></span> ' + e).fadeIn();
+	        	$("#timeLockedErrorMsg").html('<i class="bi bi-exclamation-triangle-fill"></i> ' + e).fadeIn();
 	        }
         } else {
-            $("#timeLockedErrorMsg").html('<span class="glyphicon glyphicon-exclamation-sign"></span> Public key and/or date is invalid!').fadeIn();
+            $("#timeLockedErrorMsg").html('<i class="bi bi-exclamation-triangle-fill"></i> Public key and/or date is invalid!').fadeIn();
         }
     });
 
@@ -2799,12 +2799,12 @@ observer.observe(target, config);
 		$("#redeemFromStatus, #redeemFromAddress").addClass("hidden");
 
 		if(redeem.from=='multisigAddress'){
-			$("#redeemFromStatus").removeClass("hidden").html('<span class="glyphicon glyphicon-exclamation-sign"></span> You should use the redeem script, not the multisig address!');
+			$("#redeemFromStatus").removeClass("hidden").html('<i class="bi bi-exclamation-triangle-fill"></i> You should use the redeem script, not the multisig address!');
 			return false;
 		}
 
 		if(redeem.from=='other'){
-			$("#redeemFromStatus").removeClass("hidden").html('<span class="glyphicon glyphicon-exclamation-sign"></span> The address or multisig redeem script you have entered is invalid');
+			$("#redeemFromStatus").removeClass("hidden").html('<i class="bi bi-exclamation-triangle-fill"></i> The address or multisig redeem script you have entered is invalid');
 			return false;
 		}
 
@@ -3005,7 +3005,7 @@ observer.observe(target, config);
 			url:  coinjs.host + "/listunspent/" + redeem.addr,
 			dataType: "json",
 			error: function(data) {
-				$("#redeemFromStatus").removeClass("hidden").html('<span class="glyphicon glyphicon-exclamation-sign"></span> Unexpected error, unable to retrieve unspent outputs!');
+				$("#redeemFromStatus").removeClass("hidden").html('<i class="bi bi-exclamation-triangle-fill"></i> Unexpected error, unable to retrieve unspent outputs!');
 			},
 			success: function(data) {
 				
@@ -3115,10 +3115,10 @@ observer.observe(target, config);
 							
 							
 					} else {
-						$("#redeemFromStatus").removeClass("hidden").html('<span class="glyphicon glyphicon-exclamation-sign"></span> Unexpected error, there are no unspent outputs.');
+						$("#redeemFromStatus").removeClass("hidden").html('<i class="bi bi-exclamation-triangle-fill"></i> Unexpected error, there are no unspent outputs.');
 					}
 				} else {
-					$("#redeemFromStatus").removeClass("hidden").html('<span class="glyphicon glyphicon-exclamation-sign"></span> Unexpected error, unable to retrieve unspent outputs.');
+					$("#redeemFromStatus").removeClass("hidden").html('<i class="bi bi-exclamation-triangle-fill"></i> Unexpected error, unable to retrieve unspent outputs.');
 				}
 			},
 			complete: function(data, status) {
@@ -3212,7 +3212,7 @@ observer.observe(target, config);
 			}
 
 			if (decodingError) {
-				$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html(' Unable to decode the Raw Transaction! ').prepend('<span class="glyphicon glyphicon-exclamation-sign"></span>');
+				$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html(' Unable to decode the Raw Transaction! ').prepend('<i class="bi bi-exclamation-triangle-fill"></i>');
 				$(thisbtn).val('Submit').attr('disabled',false);
 				return ;
 			}
@@ -3259,11 +3259,11 @@ observer.observe(target, config);
 
 							} else {
 								//$("#walletSendConfirmStatus").removeClass("hidden").addClass('alert-danger').html(unescape(callback_result).replace(/\+/g,' '));
-								$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html(unescape(callback_result)).prepend('<span class="glyphicon glyphicon-exclamation-sign"></span>').append("<br>You should perhaps try to raise the Transaction Fee?");;
+								$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html(unescape(callback_result)).prepend('<i class="bi bi-exclamation-triangle-fill"></i>').append("<br>You should perhaps try to raise the Transaction Fee?");;
 								$(thisbtn).val('Submit').attr('disabled',false);
 							}
 						}else{
-							$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html('Unexpected error, please try again').prepend('<span class="glyphicon glyphicon-exclamation-sign"></span>');
+							$("#rawTransactionStatus").addClass('alert-danger').removeClass('alert-success').removeClass("hidden").html('Unexpected error, please try again').prepend('<i class="bi bi-exclamation-triangle-fill"></i>');
 						}				
 
 	
