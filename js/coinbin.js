@@ -224,15 +224,6 @@ document.querySelector('#openBtnPrivateKey').addEventListener('click', function 
 		profile_data.private_keys.push(decodedPrivkey1.privkey_wif);
 		profile_data.public_keys.push(decodedPrivkey1.pubkey);
 	}
-	
-	/*
-	"address" : w2address,
-	"pubkey" : w2pubkey,
-	"privkey_hex" : w2privkey,
-	"privkey_wif" : wif
-	*/
-
-	
 	profile_data.signatures = 1;
   profile_data.wallet_type = "regular";
 
@@ -262,16 +253,11 @@ document.querySelector('#openBtnPrivateKey').addEventListener('click', function 
   	}
 	}
 
-		
-	
-	//console.log('errorMessage: ' + errorMessage);
+
+	//***No Errors! Proceed Login - with private key generation!
 	if(!errorMessage){
 		$(".walletLoginStatus").html('').addClass("hidden").fadeIn().fadeOut();
 		profile_data.login_type = "private_key";
-		
-		
-
-		console.log('profile_data: ', profile_data);
 		checkUserLogin(profile_data);
 		return ;
 	}
@@ -517,8 +503,6 @@ profile_data = {
 		$(".walletBalanceLiquid").text("");
 		$(".walletBalanceReserve").text("");
 		$(".walletBalanceFrozen").text("");
-		$(".accountSessionLogout").addClass("hidden");
-		$(".accountSessionLogin").removeClass("hidden");
     
     $(".topPanel .bibi-box-arrow-left").addClass("hide");
     
@@ -4126,8 +4110,8 @@ observer.observe(target, config);
 			//console.log('session restored from HTML5')
 			//console.log('sessionData: ' , profile_data);
 
+		//***If the sessionData is empty just return
 		if(sessionData == null || sessionData === undefined || Object.keys(sessionData).length === 0) {
-			console.log('sessionData: ', sessionData);
 			return ;
 		}
 		
@@ -4264,8 +4248,6 @@ observer.observe(target, config);
 
 
 		//Menu Account Info
-		$(".accountSessionLogin").addClass("hidden");
-		$(".accountSessionLogout").removeClass("hidden");
 		$(".walletAddress").text(profile_data.address);
 		$(".walletAddress").attr("data-original-title", "Wallet Address");
 
