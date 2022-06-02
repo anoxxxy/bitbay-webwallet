@@ -61,6 +61,10 @@ $(document).ready(function() {
     $("#multisigwallet").removeClass("active");
     $("#regularwallet").addClass("active");    
     //$(".form-openWalletTypeText").text("Regular Wallet");
+    
+    //empty multisig password2 field
+    $('#openPass2').val('');
+    $('#openPass2-confirm').val('');
   }
   function showMultisigWallet(){
     $("#openWalletType").val('multisig').trigger('change');
@@ -80,27 +84,42 @@ $(document).ready(function() {
     var target = $(e.target).attr("href");
     var id = $(e.target).attr("id");
     if(target === "#wallet" && id === "multisigwalletLink")
-      showMultisigWallet();      
+      showMultisigWallet();
   });
 	
   
   
-  //disable enable login/create button
-	$('#openBtn').prop('disabled', true);
-	$('#acceptTerms').on("change",function() {
-	 	if($(this).is(":checked")) {
-			$('#openBtn')
+  //***Disable enable login/create button
+	$('.loginButton').prop('disabled', true);
+	$('.acceptTerms').on("change",function(event) {
+	 	
+    parentElement = event.target.offsetParent.offsetParent;
+    var dataAttribute = parentElement.getAttribute('data-wallet-login-multistep-wizard');
+    //console.log('dataAttribute: ' + dataAttribute);
+    //$('section.login-box[data-wallet-login-multistep-wizard='+dataAttribute+'] input[type=submit]')
+
+
+
+    if($(this).is(":checked")) {
+			$('section.login-box[data-wallet-login-multistep-wizard='+dataAttribute+'] input[type=submit]')
+        .prop('disabled', false)
+        .removeClass("btn-flatbay-inactive")
+      /*$('.loginButton')
 				.prop('disabled', false)
-				.removeClass("btn-flatbay-inactive");
+				.removeClass("btn-flatbay-inactive");*/
 	 	}else{
-			$('#openBtn')
+			$('section.login-box[data-wallet-login-multistep-wizard='+dataAttribute+'] input[type=submit]')
+      .prop('disabled', true)
+        .addClass("btn-flatbay-inactive");
+      /*$('.loginButton')
 				.prop('disabled', true)
-				.addClass("btn-flatbay-inactive");
+				.addClass("btn-flatbay-inactive");*/
+
 		}
 	});
 
   //remember button pressing
-	$('#remember').on("change",function() {
+	$('.loginRemember').on("change",function() {
 	 	if($(this).is(":checked")) {
 			$('#rememberMe').val("true");
 			//$('#rememberMe option:eq(true)').prop('selected', true)
@@ -131,23 +150,29 @@ $(document).ready(function() {
   //i.e. label input label input label input input label input etc
   $('#print').on('click', function (e) {
     //console.log(profile_data);
-    if(profile_data == null || profile_data === "")
+    if(profile_data == null || profile_data === undefined || Object.keys(profile_data).length === 0) {
       profile_data = HTML5.sessionStorage('profile_data').get();
+      console.log('profile_data IS NOT set - get from HTML5');
+    }else{
+      console.log('profile_data is set already');
+    }
       
     var print = [];
 
     print.push("<h2>BitBay - Wallet Backup Information!</h1>");
     
-    //passwords
-    print.push("<h3>Email</h2>");
-    print.push("<div>" + profile_data.email + "</div>");
+    if(profile_data.login_type =="password"){
+      //passwords
+      print.push("<h3>Email</h2>");
+      print.push("<div>" + profile_data.email + "</div>");
 
-    print.push("<h3>Password</h2>");
-    print.push("<div>" + safe_tags(profile_data.passwords[0].password) + "</div>");
+      print.push("<h3>Password</h2>");
+      print.push("<div>" + safe_tags(profile_data.passwords[0]) + "</div>");
 
-    if(profile_data.passwords[1].password !== undefined){
-      print.push("<h3>Password2</h2>");
-      print.push("<div>" + safe_tags(profile_data.passwords[1].password) + "</div>");
+      if(profile_data.passwords[1] !== undefined && profile_data.passwords[1] != ""){
+        print.push("<h3>Password2</h2>");
+        print.push("<div>" + safe_tags(profile_data.passwords[1]) + "</div>");
+      }
     }
     
     var lastIn = "";
@@ -174,66 +199,6 @@ $(document).ready(function() {
     printNewWindow("printArea");
 	});
   
-  
-  //extra validation functions
-  function validateElem(id,label) {
-    if($(id).val() == $(id +"-confirm").val()){
-      return "";
-    }
-    else {
-      return label + " does not match<br/>";
-    }
-  }
-
-  function confirmEmailPass(){  
-    var elem = $('#openBtn');
-    if(elem[0] == null) 
-      return ;
-    var oldClick = $._data(elem[0], 'events').click[0].handler;
-		elem.off('click');
-
-    elem.click(function(){
-      $("#openLoginStatus").addClass("hidden");
-      var confirmPass = $("#confirmPass").prop('checked');
-      var error = "";
-      var email = $("#openEmail").val()
-      if(!validateEmail(email)){
-          error = "Not a valid Email<br/>";
-      }
-      
-      //if(window.confirm("Are You Sure?")){
-      if(confirmPass){
-        error += validateElem("#openEmail","Email");
-        error += validateElem("#openPass","Password");
-        error += validateElem("#openPass2","Password2");
-        if(error){
-          $("#openLoginStatus").html(error).removeClass("hidden").fadeOut().fadeIn();
-          $("#openLoginStatus").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
-
-
-          //$("#errormessages").html(error);
-      		return false;          
-        }else{
-          //$("#errormessages").html("");
-          oldClick();          
-        }
-      } else if(error) {
-        //$("#errormessages").html(error);
-        $("#openLoginStatus").html(error).removeClass("hidden").fadeOut().fadeIn();
-        $("#openLoginStatus").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
-
-        return false;          
-      } else {
-        oldClick();
-      }
-    });    
-  }
-  confirmEmailPass();
-  
-  function validateEmail(email) {
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
-  }
 
 
   //changing type of wallet seletion from dropdown to tab/button
@@ -263,6 +228,10 @@ $(document).ready(function() {
       $(elements).removeClass("hidden");
 	 	}else{
       $(elements).addClass("hidden");
+      $('#openEmail-confirm').val('').removeClass("unconfirmed");
+      $('#openPass-confirm').val('').removeClass("unconfirmed");
+      $('#openPass2-confirm').val('').removeClass("unconfirmed");
+      
 		}
 	});
   
@@ -437,6 +406,104 @@ $(document).ready(function() {
 		init();
     
 
+  //WalletLogin START - Multistep Wizard
+  var walletLoginStepChild = 1;
+  var walletLoginSteplength = $("#wallet .login-container section").length - 1;
+
+  $("section").not("section:nth-of-type(1)").addClass('hide');
+  //$("section").not("section:nth-of-type(1)").hide();
+  $("section")
+    .not("section:nth-of-type(1)")
+    .css("transform", "translateX(100px)");
+
+  
+
+    /*for (i=0; i<=walletLoginSteplength;i++){
+      console.log('steps: '+ i);
+      $('#wallet .login-container .multistep_progress_bar').append(' '+(i+1));
+    }
+    */
+
+  //multistep wallet login options- section click navigation
+  $("#wallet .login-container .multistep_progress_bar .callout").click(function () {
+    var goToStep = $(this).attr("data-multistep-wizard-step");
+
+    if(goToStep == 2)
+      showRegularWallet();
+    if(goToStep == 3) {
+      showMultisigWallet();
+      goToStep = 2;
+    }
+    
+    var currentSection = $("#wallet .login-container section:nth-of-type(" + goToStep + ")");
+    
+    currentSection.removeClass('hide').fadeIn();
+    currentSection.css("transform", "translateX(0)").fadeIn();
+    currentSection.prevAll("#wallet .login-container section").css("transform", "translateX(-100px)").fadeOut();
+    currentSection.nextAll("#wallet .login-container section").css("transform", "translateX(100px)").fadeOut();
+    $("#wallet .login-container section").not(currentSection).addClass('hide').fadeOut();
+    //$("#wallet .login-container section").not(currentSection).hide();
+
+    //show back options for wallet login wizard
+    if(goToStep > 1)
+      $('#multistep-wizard-reset').removeClass('hide').fadeIn();
+    else
+      $('#multistep-wizard-reset').addClass('hide').fadeOut();
+  });
+  
+  //multistep wallet login - back button
+  $("#wallet .login-container #multistep-wizard-reset, .nav #wallet_options").click(function () {
+    goToStep = 1;
+    var currentSection = $("#wallet .login-container section:nth-of-type(" + goToStep + ")");
+    currentSection.removeClass('hide').fadeIn();
+    currentSection.css("transform", "translateX(0)").fadeIn();
+    currentSection.prevAll("#wallet .login-container section").css("transform", "translateX(-100px)").fadeOut();
+    currentSection.nextAll("#wallet .login-container section").css("transform", "translateX(100px)").fadeOut();
+    $('#multistep-wizard-reset').addClass('hide').fadeOut();
+    $('.walletLoginStatus').addClass('hide');
+    $("#wallet .login-container section").not(currentSection).addClass('hide').fadeOut();
+    //$("#wallet .login-container section").not(currentSection).hide();
+    
+  });
+  
+
+
+  //multistep section click navigation
+  /*
+  $("#wallet .login-container .button").click(function () {
+    
+    var id = $(this).attr("id");
+    if (id == "next") {
+      $("#prev").removeClass("disabled");
+      if (walletLoginStepChild >= walletLoginSteplength) {
+        $(this).addClass("disabled");
+        $("#submit").removeClass("disabled");
+      }
+      if (walletLoginStepChild <= walletLoginSteplength) {
+        walletLoginStepChild++;
+      }
+    } else if (id == "prev") {
+      $("#next").removeClass("disabled");
+      $("#submit").addClass("disabled");
+      if (walletLoginStepChild <= 2) {
+        $(this).addClass("disabled");
+      }
+      if (walletLoginStepChild > 1) {
+        walletLoginStepChild--;
+      }
+    }
+    
+    var currentSection = $("#wallet .login-container section:nth-of-type(" + walletLoginStepChild + ")");
+    currentSection.fadeIn();
+    currentSection.css("transform", "translateX(0)");
+    currentSection.prevAll("#wallet .login-container section").css("transform", "translateX(-100px)");
+    currentSection.nextAll("#wallet .login-container section").css("transform", "translateX(100px)");
+    $("#wallet .login-container section").not(currentSection).hide();
+
+    
+  });
+  */
+  //WalletLogin END - Multistep Wizard
 
 	});
 	
@@ -527,6 +594,43 @@ https://codepen.io/SergioLMacia/pen/eYYMjbm
 
 
 });
+
+//***Function to Copy-click on input fields
+document.addEventListener(
+  "click",
+  function (event) {
+
+    // Only fire if the target has class copy
+    if(!event.target.classList.contains('copy-input')) return;
+    //console.log('class: ', event.target.classList.contains('copy-input'));
+    //if (!event.target.matches("copy-input")) return;
+
+    //console.log('closest: ' , $(event).closest('input'));
+
+    //get the input-field value to copy
+    var copyInputValue = event.target.parentElement.previousElementSibling.value;
+    //console.log('event.target.parentElement.previousElementSibling: ', event.target.parentElement.previousElementSibling);
+
+    $(event.target.parentElement.previousElementSibling).fadeOut().fadeIn();
+
+    if (!navigator.clipboard) {
+      // Clipboard API not available
+      return;
+    }
+
+    try {
+      navigator.clipboard.writeText(copyInputValue);
+      //document.getElementById("copy-status").innerText = "Copied to clipboard";
+      setTimeout(function () {
+        //document.getElementById("copy-status").innerText = "Click to copy";
+      }, 1200);
+    } catch (err) {
+      console.error("Failed to copy!", err);
+    }
+  },
+  false
+);
+
 
 //Create Notifies for users for Balance change 
 PNotify_helper = function (title, text, type) {

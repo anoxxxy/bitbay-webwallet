@@ -1,3 +1,6 @@
+//***Global variables!
+	var profile_data = {};
+
 /*
  Coinjs 0.01 beta by OutCast3k{at}gmail.com
  A bitcoin framework.
@@ -19,7 +22,7 @@
 	coinjs.multisig = 0x55;
 	coinjs.multisig_str = "55";
 	coinjs.hdkey = {'prv':0x02cfbf60, 'pub':0x02cfbede};
-	
+
 	coinjs.compressed = false;
 
 	//For Bitbay, Blackcoin
@@ -1291,11 +1294,11 @@ https://api.latoken.com/v2/ticker
 							var scriptPubKey_buffer = Crypto.util.bytesToHex(scriptPubKey.buffer);
 							inputScript = scriptPubKey_buffer;
 						} else if (decode.version == coinjs.multisig){ // mulisig address
-							inputScript = $("#walletKeys .redeemScript_wallet").val();
+							inputScript = profile_data.redeem_script;
 						}
 						
 						if (coinjs.debug) {
-							console.log ("redeemScript_wallet: "+ $("#walletKeys .redeemScript_wallet").val() ); 
+							console.log ("redeemScript_wallet: "+ profile_data.redeem_script ); 
 						}
 						for(var i in dataJSON.result){
 							var o = dataJSON.result[i];
@@ -2290,5 +2293,7 @@ https://api.latoken.com/v2/ticker
 
 		return generatePassword(l);
 	}
+
+	//console.log('global client variable: ' , profile_data);
 
 })();

@@ -1,4 +1,3 @@
-var profile_data = "";
 var debug = false;
 var bip39 = new BIP39('en');
 /*
@@ -160,39 +159,269 @@ document.getElementById('multisigWalletNnumber').addEventListener('change', func
 });
 */
 
+/*
+@ Login Handling for Private Keys
+*/
 
-document.getElementById('openBtn').addEventListener('click', function () {
-  console.log("You finally clicked without jQuery");
-  
-  
+document.querySelector('#loginExtraPrivateKey').addEventListener('click', function (event) {
+	
+	//get inputs elements for privatekeys
+	var privateKeyInputs = [];
+	$('section.login-box[data-wallet-login-multistep-wizard=private_key] input[name=openPrivateKey]').each(function(i, e) {
+	  privateKeyInputs.push(e);
+	});
+	//console.log('privateKeyInputs: ', privateKeyInputs);
+	//console.log('privateKeyInputs.length: ', privateKeyInputs.length);
+
+	//check if second key is visible
+	//console.log('second: ', privateKeyInputs[1].parentElement.classList.contains('hidden'));
+	if(privateKeyInputs[1].parentElement.classList.contains('hidden')){
+		event.target.innerHTML = '- Remove second private key';
+		privateKeyInputs[1].parentElement.classList.remove('hidden');
+	}else{
+		event.target.innerHTML = '+ Add second private key';
+		privateKeyInputs[1].parentElement.classList.add('hidden');
+		privateKeyInputs[1].value = '';
+	}
+	
+
+});
+document.querySelector('#openBtnPrivateKey').addEventListener('click', function () {
+	
+	//error handling  
+  var error = true;
+  var errorMessage = '';
+
+  profile_data.pubkey_sorted = false;
+  profile_data.private_keys = [];
+  profile_data.public_keys = [];
+
+  //***Get input fields
+  profile_data.remember_me = ($(this).parents('section').find('input.loginRemember').is(":checked") ? 1 : 0)
+  loginRemember = profile_data.remember_me;
+  //console.log('loginRemember: ' + loginRemember);
+
+  //get inputs elements for privatekeys
+	var privateKeyInputs = [];
+	$('section.login-box[data-wallet-login-multistep-wizard=private_key] input[name=openPrivateKey]').each(function(i, e) {
+	  privateKeyInputs.push(e);
+	});
+
+	var privkey1 = privateKeyInputs[0].value;
+	var privkey2 =  privateKeyInputs[1].value;
+
+	//***Validate private keys!
+	//handle private key 1
+	var decodedPrivkey1 = getDecodedPrivKey(privkey1);
+	if(!decodedPrivkey1){
+		errorMessage += "Your Private Key 1 is not valid! <br>";
+		privateKeyInputs[0].parentElement.classList.add('has-error');
+	}else{
+		privateKeyInputs[0].parentElement.classList.remove('has-error');
+		//console.log('decodedPrivkey1: ', decodedPrivkey1);
+
+		profile_data.address = decodedPrivkey1.address;
+		profile_data.private_keys.push(decodedPrivkey1.privkey_wif);
+		profile_data.public_keys.push(decodedPrivkey1.pubkey);
+	}
+	
+	/*
+	"address" : w2address,
+	"pubkey" : w2pubkey,
+	"privkey_hex" : w2privkey,
+	"privkey_wif" : wif
+	*/
+
+	
+	profile_data.signatures = 1;
+  profile_data.wallet_type = "regular";
+
+
+	//We have 2 Private Keys inputs!
+	if(!privateKeyInputs[1].parentElement.classList.contains('hidden')){
+
+		var decodedPrivkey2 = getDecodedPrivKey(privkey2);
+  	if(!decodedPrivkey2){
+  		errorMessage += "Your Private Key 2 is not valid! <br>";
+  		privateKeyInputs[1].parentElement.classList.add('has-error');
+  	}else{
+  		privateKeyInputs[1].parentElement.classList.remove('has-error');
+
+  		//console.log('decodedPrivkey2: ', decodedPrivkey2);
+  		profile_data.private_keys.push(decodedPrivkey2.privkey_wif);
+  		profile_data.public_keys.push(decodedPrivkey2.pubkey);
+  		profile_data.signatures = 2;
+  		profile_data.wallet_type = "multisig";
+
+  		//create multisig address
+  		var keys_combined = [decodedPrivkey1.pubkey, decodedPrivkey2.pubkey];
+			var multisig =  coinjs.pubkeys2MultisigAddress(keys_combined, 2);	//create 2-of-2 multisig wallet
+			profile_data.address = multisig["address"];	//address, scriptHash, redeemScript
+			profile_data.redeem_script = multisig["redeemScript"];	//address, scriptHash, redeemScript
+
+  	}
+	}
+
+		
+	
+	//console.log('errorMessage: ' + errorMessage);
+	if(!errorMessage){
+		$(".walletLoginStatus").html('').addClass("hidden").fadeIn().fadeOut();
+		profile_data.login_type = "private_key";
+		
+		
+
+		console.log('profile_data: ', profile_data);
+		checkUserLogin(profile_data);
+		return ;
+	}
+
+	//***Error message handling!
+	$('section.login-box[data-wallet-login-multistep-wizard=private_key] .walletLoginStatus').prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+	$('section.login-box[data-wallet-login-multistep-wizard=private_key] .walletLoginStatus').html(errorMessage).removeClass("hidden").removeClass("hide").fadeOut().fadeIn();
+	return ;
+
+
+});
+
+/*
+ @ Login Button for email+password
+*/
+document.querySelector('.loginButton').addEventListener('click', function () {
+	//error handling  
+  var error = true;
+  var errorMessage = '';
+
+  //set client default values for profile data
+  profile_data.signatures = 1;
+  profile_data.wallet_type = "regular";
+
+  //***Get input fields
+  var confirmFieldsIsChecked = $("#confirmPass").is(":checked");
+  //var loginRemember = $(this).parents('section').find('input.loginRemember').is(":checked");
+  profile_data.remember_me = ($(this).parents('section').find('input.loginRemember').is(":checked") ? 1 : 0)
+  loginRemember = profile_data.remember_me;
+
+  console.log('confirmFieldsIsChecked: ' + confirmFieldsIsChecked);
+  console.log('loginRemember: ' + loginRemember);
+
+  var walletType = $("#regularwallet").hasClass("active") ? "regular" : "multisig";
+  console.log('walletType: ' + walletType);
+
   //get passwords
   var loginPass = [];
   var loginPassEl = document.getElementsByName("openPass");
   for(var i = 0; i < loginPassEl.length; i++) {
-    loginPass.push({"password": (loginPassEl[i].value).trim()});
-    
+    loginPass.push((loginPassEl[i].value).trim());
   }
-  
   console.log('loginPass: ', loginPass);
-  
-  console.log('loginPass: ' + loginPass[0]["password"]);
-  console.log('loginPass: ' + loginPass[1]["password"]);
-  
+  console.log('loginPass: ', loginPass[0]);
   
   //get confirmed passwords 
   var loginPassConfirm = [];
   var loginPassConfirmEl = document.getElementsByName("openPass-confirm");
   for(var i = 0; i < loginPassConfirmEl.length; i++) {
-    loginPassConfirm.push({"password": (loginPassConfirmEl[i].value).trim()});
-    
+    loginPassConfirm.push((loginPassConfirmEl[i].value).trim());
   }
-  
   console.log('loginPassConfirm: ', loginPassConfirm);
+  console.log('loginPassConfirm: ', loginPassConfirm[0]);
   
-  console.log('loginPassConfirm: ' + loginPassConfirm[0]["password"]);
-  console.log('loginPassConfirm: ' + loginPassConfirm[1]["password"]);
+  //get emails
+  var loginEmail = $("#openEmail").val().toLowerCase().trim();
+  var loginEmailConfirm = $("#openEmail-confirm").val().toLowerCase().trim();
+
+  //***Validate the input fields
+  if(!validateEmail(loginEmail)) errorMessage += 'Email is not valid!<br/>';
   
-  
+
+  console.log('loginEmail: ', loginEmail);
+  //console.log('loginEmailConfirm: ', loginEmailConfirm);
+
+	if(!validatePassword(loginPass[0]))	errorMessage += 'Your Password must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from \"!#$€%&\'()*+,-./:;<=>?@[\]^_`{|}~¤¨½§ <br>';
+	
+	//check if Confirmation (email and password) is needed for regular login
+	if(confirmFieldsIsChecked){
+		if(!validateEmail(loginEmailConfirm)) errorMessage += 'Confirmed Email is not valid!<br/>';
+  	if(loginEmail != loginEmailConfirm) errorMessage += 'Email and Confirmed Email is not the same!<br/>';
+		if(!validatePassword(loginPassConfirm[0])) errorMessage += 'Confirmed Password is not valid!<br/>';
+
+		//compare password and confirmed password
+  	if(loginPass[0] != loginPassConfirm[0]) errorMessage += '"Password" and "Confirmed Password" is not the same!<br/>';
+	}
+
+	//validate multisig wallet
+	if(walletType == 'multisig') {
+		if(!validatePassword(loginPass[1]))	errorMessage += 'Your Password2 must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from \"!#$€%&\'()*+,-./:;<=>?@[\]^_`{|}~¤¨½§ <br>';
+		
+		//Password1 & Password2 should not be the same!
+  	if(loginPass[0] == loginPass[1]) errorMessage += 'You must use 2 different passwords!<br/>';
+
+		//check if Confirmation (email and password) is needed for multisig login
+		if(confirmFieldsIsChecked){
+			if(!validatePassword(loginPassConfirm[1])) errorMessage += 'Confirmed Password2 is not valid!<br/>';
+			if(loginPass[1] != loginPassConfirm[1]) errorMessage += '"Password2" and "Confirmed Password2" is not the same!<br/>';
+		}
+
+		profile_data.signatures = 2;	//this is a multisig account!
+		profile_data.wallet_type = "multisig";	//this is a multisig account!	we might remove this field later on since we can detect the signatures from variable above!
+
+	}
+
+	profile_data.login_type = "password";
+	profile_data.pubkey_sorted = false;
+	profile_data.public_keys = [];
+	
+
+	console.log('errorMessage: ' + errorMessage);
+	
+	//***No Errors! Proceed Login - with private key generation!
+	if(!errorMessage){
+		$(".walletLoginStatus").html('').addClass("hidden").fadeIn().fadeOut();
+
+		profile_data.email = loginEmail;
+		profile_data.passwords = loginPass;
+
+		/*profile_data = { 
+			"address" : "",
+			"email" : loginEmail,
+			"login_type" : "", //"password" (email & password login), "private_key" login, "mnemonic" login, "hdmaster" login
+			"wallet_type" : walletType,	//regular (login normal address), multisig
+			"redeem_script" : "",
+			"remember_me" : loginRemember,
+			"pubkey_sorted": false,	// check this when generating the private keys! - (it must be sorted if user wants to import to BitBay Client Wallet)
+			"signatures" : signatures,	//total signatures/private keys needs for signing a transaction!
+			
+			"public_keys" : [
+				//{loginPass[0]["password"]},
+				//{loginPass[1]["password"]}
+			],
+			"passwords" : [
+				loginPass
+				//{loginPass[0]["password"]},
+				//{loginPass[1]["password"]}
+			],
+			"private_keys" : [
+				{""},
+				{""}
+			],
+			"deterministic" : [
+				{"xpub" : ""},
+				{"xprv" : ""},
+				{"seed" : ""}
+			]
+		};
+		*/
+
+		console.log('profile_data: ', profile_data);
+		checkUserLogin(profile_data);
+		return ;
+	}
+
+	//***Error message handling!
+	$(".walletLoginStatus").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+	$(".walletLoginStatus").html(errorMessage).removeClass("hidden").removeClass("hide").fadeOut().fadeIn();
+	return ;
+
 });
 
 
@@ -204,7 +433,8 @@ document.getElementById('openBtn').addEventListener('click', function () {
 
 
 
-	$("#openBtn").click(function(){
+	$(".o2penBtn").click(function(){
+		console.log('$("#openBtc clicked');
 		var pass = $("#openPass").val();
 		var pass2 = $("#openPass2").val();
 		var remember_me = $("#rememberMe").val();
@@ -238,48 +468,40 @@ profile_data:"{"email":"email@test.com","wallet_type":"multisig","remember_me":"
 
 
 profile_data = { 
-		"address" : "",
-		"email" : email,
-		"login_type" : "", //"password" (email, password login), "private_key" login, "mnemonic" login, "hdmaster" login
-		"wallet_type" : walletType,	//regular (login normal address), multisig
-		"remember_me" : remember_me,
-		"pubkey_sorted": false,	//it must be sorted if user wants to import to the Client Wallet
-		"signatures" : 1,	//total signatures/private keys needs for signing a transaction!
-		"passwords" : [
-				{"password" : pass},
-				{"password" : pass2}
-			],
-		"private_keys" : [
-				{"key" : ""},
-				{"key" : ""}
-			],
-		"pub_keys" : [
-				{"key" : ""},
-				{"key" : ""}
-			],
-			"deterministic" : [
-				{"xpub" : ""},
-				{"xprv" : ""},
-				{"seed" : ""}
-			]
-		};
+	"address" : "",
+	"email" : email,
+	"login_type" : "", //"password" (email & password login), "private_key" login, "mnemonic" login, "hdmaster" login
+	"wallet_type" : walletType,	//regular (login normal address), multisig
+	"remember_me" : remember_me,
+	"pubkey_sorted": false,	//it must be sorted if user wants to import to BitBay Client Wallet
+	"signatures" : 1,	//total signatures/private keys needs for signing a transaction!
+	"passwords" : [
+			{"password" : pass},
+			{"password" : pass2}
+		],
+	"private_keys" : [
+			{"key" : ""},
+			{"key" : ""}
+		],
+	"pub_keys" : [
+			{"key" : ""},
+			{"key" : ""}
+		],
+	"deterministic" : [
+			{"xpub" : ""},
+			{"xprv" : ""},
+			{"seed" : ""}
+		]
+	};
 
 		*/
 		//checkUserLogin(JSON.parse(profile_data));
 		checkUserLogin(profile_data);
 	});
 
-	//copy walletKeys so sensitive info stay in the backup tab
-	function copyWalletInfo(){
-		if (debug) {
-			console.log("copyWalletInfo");
-		}
-		$("#walletKeysCopy").empty();
-		$("#walletKeys .share-yes").clone().appendTo("#walletKeysCopy");
-	}
 
-	//$(".walletLogout").click(function(sessionDestroy = false){
 	$(".walletLogout").click(function(e){
+		$(".nav #wallet_options").click();
 		$("#openEmail").val("");
 		$("#openEmail-confirm").val("");
 		$("#openPass").val("");
@@ -301,7 +523,7 @@ profile_data = {
     $(".topPanel .glyphicon.glyphicon-log-out").addClass("hide");
     
 		
-		$("#openLogin").show();
+		$(".walletLogin").show();
 		$("#openWallet").addClass("hidden").show();
 
 		$("#walletAddress").html("");
@@ -312,16 +534,24 @@ profile_data = {
 		qrcode.makeCode("bitbay:");
 
 		$("#walletKeys .privkey").val("");
-		$("#walletKeys .pubkey").val("");
+		$(".walletPubKeys .pubkey").val("");
 		$("#walletKeys .privkeyaes").val("");
 		
 		$("#walletKeys .privkey2").val("");
-		$("#walletKeys .pubkey2").val("");
+		$(".walletPubKeys .pubkey2").val("");
 		$("#walletKeys .privkeyaes2").val("");
 		
-		//Remove HTML5 Sessions
-		//if (sessionDestroy)
-			HTML5.sessionStorage('profile_data').remove();
+		/*
+		$('.walletPubKeys .redeemScript_wallet').parent().addClass('hidden');
+		$('.wallet_multisig_keys').addClass('hidden');
+		$('#walletKeys .privkey2').addClass('hidden');
+		$('.walletPubKeys .pubkey2').parent().addClass('hidden');
+		$("#walletKeys .privkeyaes2").addClass('hidden');
+		*/
+
+		//Remove HTML5 Sessions and emppty client data
+		HTML5.sessionStorage('profile_data').remove();
+		profile_data = {};
 		
 		//Remove NotifiesSessions
 		PNotify_remove();
@@ -835,15 +1065,14 @@ async function init_broadcast_progress_bar(txinputs_total, manualTransaction=1) 
 	$("#walletSendFailTransaction textarea").val("");
 								
 	$(".broadcast-process").removeClass("hidden");
-	var totalSignatures;
+	var totalSignatures = 1;
 
 	if(manualTransaction == 1){
 		totalSignatures = 1;
 		parentElement = 0; //'signedDataProgress';
 		console.log('totalSignatures: ', totalSignatures);
 	} else {
-		totalSignatures = (profile_data.passwords).length;
-		console.log('(profile_data.passwords).length: ', (profile_data.passwords).length);
+			totalSignatures = profile_data.signatures;
 		parentElement = 1;
 	}
 
@@ -1088,7 +1317,7 @@ async function init_broadcast_progress_bar(txinputs_total, manualTransaction=1) 
 					PNotify_helper('Balance', 'Your current Balance is: '+newBalance, 'error');
 				}
 				$(".walletBalance").html(newBalance+" "+coinjs.symbol).attr('rel',newBalance).fadeOut().fadeIn();
-				$(".topPanel .walletBalance").text("Balance ("+coinjs.symbol+"): " + newBalance).attr('rel',newBalance).fadeOut().fadeIn();
+				$(".topPanel .walletBalance").text("Balance: " + newBalance).attr('rel',newBalance).fadeOut().fadeIn();
 				$(".topPanel .glyphicon.glyphicon-log-out").removeClass("hide");
 				$(".walletBalanceLiquid").html(newLiquid+" "+coinjs.symbol).attr('rel',newLiquid);
 				$(".walletBalanceReserve").html(newReserve+" "+coinjs.symbol+'R').attr('rel',newReserve);
@@ -3326,6 +3555,32 @@ observer.observe(target, config);
 		}
 	}
 
+	function getDecodedPrivKey(privkey){
+		var wif = privkey;
+		if(privkey.length==64){
+			wif = coinjs.privkey2wif(wif);
+		}
+		if(wif.length==51 || wif.length==52){
+			try {
+				var w2address = coinjs.wif2address(wif);
+				var w2pubkey = coinjs.wif2pubkey(wif);
+				var w2privkey = coinjs.wif2privkey(wif);
+
+	 			return { 
+					"address" : w2address.address,
+					"pubkey" : w2pubkey.pubkey,
+					"privkey_hex" : w2privkey.privkey,
+					"privkey_wif" : wif
+				}
+
+			} catch (e) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
 	function decodePubKey(){
 		var pubkey = $("#verifyScript").val();
 		if(pubkey.length==66 || pubkey.length==130){
@@ -3403,6 +3658,7 @@ observer.observe(target, config);
 			$("#hdpath").removeClass();
 		}
 	});
+
 
 	/* sign code */
 	$("#signPrivateKey").change(function(){
@@ -3595,7 +3851,7 @@ observer.observe(target, config);
 		} else {
 			$("input[type='password']",$(this).parent().parent()).attr('type','text');
 			$(this).data("hidden", false);
-			$(this).text("hidden");
+			$(this).text("Hide");
 		}
 	});
 
@@ -3706,20 +3962,20 @@ observer.observe(target, config);
 
 		// deal with broadcasting settings
 		if(o[5]=="false"){
-			$("#coinjs_broadcast, #rawTransaction, #rawSubmitBtn, #openBtn").attr('disabled',true);
+			$("#coinjs_broadcast, #rawTransaction, #rawSubmitBtn, .loginButton").attr('disabled',true);
 			$("#coinjs_broadcast").val("coinb.in");	
 		} else {
 			$("#coinjs_broadcast").val(o[5]);
-			$("#coinjs_broadcast, #rawTransaction, #rawSubmitBtn, #openBtn").attr('disabled',false);
+			$("#coinjs_broadcast, #rawTransaction, #rawSubmitBtn, .loginButton").attr('disabled',false);
 		}
 
 		// deal with unspent output settings
 		if(o[6]=="false"){
-			$("#coinjs_utxo, #redeemFrom, #redeemFromBtn, #openBtn, .qrcodeScanner").attr('disabled',true);			
+			$("#coinjs_utxo, #redeemFrom, #redeemFromBtn, .loginButton, .qrcodeScanner").attr('disabled',true);			
 			$("#coinjs_utxo").val("coinb.in");
 		} else {
 			$("#coinjs_utxo").val(o[6]);
-			$("#coinjs_utxo, #redeemFrom, #redeemFromBtn, #openBtn, .qrcodeScanner").attr('disabled',false);
+			$("#coinjs_utxo, #redeemFrom, #redeemFromBtn, .loginButton, .qrcodeScanner").attr('disabled',false);
 		}
 
 		// deal with the reset
@@ -3794,50 +4050,24 @@ observer.observe(target, config);
 	
 	/*Custom Settings*/
 	/*
-	 @ Check Password
+	 @ Validate Email address
 	*/
-		checkPassword = function (val) {
-		var str = val;
-		//var str = el.val();
-		
-		
-		
-		
-			var msg = '';
-			if (str.length < 12) {
-				msg= ("too_short");
-			} else if (str.length > 255) {
-				msg= ("too_long");
-			} else if (str.search(/\d/) == -1) {
-				msg= ("no_num");
-			} else if (str.search(/[a-z]/) == -1) {
-				msg= ("no_lower_case");
-			} else if (str.search(/[A-Z]/) == -1) {
-				msg= ("no_upper_case");
-			//} else if (str.search(/[^a-zA-Z0-9\!\@\#\$\%\^\&\*\(\)\_\+\.\=\,\;\:\!\-]/) != -1) {
-			} else if (str.search(/[^a-zA-Z0-9\!\@\§\½\€\¤\£\`\´\#\$\"\'\%\^\&\*\(\)\_\+\.\=\~\¨\|\,\;\:\!\-\[\]\}\{\/\\\?\>\<\^]/) != -1) {
-				msg= ("bad_char");
-			}else {
-				msg=("");
-				//$('.checkInputsPassword').addClass("hidden")
-			}
-			
-			// pattern to match : At least one number ,one letter and one special character
-			//var regex = /^(((.*\d.*[A-Z].*[!@#%&¨*¤()+-={}[\]"'*:.,<>_\-$€%^&amp;amp;*? ~].*))|(.*[A-Z].*\d.*[!@#%&¨*¤()+-={}[\]"'*:.,<>_\-$€%^&amp;amp;*? ~].*)|(.*[!@#%&¨*¤()+-={}[\]"'*:.,<>_\-$€%^&amp;amp;*? ~].*[A-Z].*\d.*)|(.*[!@#%&¨*¤()+-={}[\]"'*:.,<>_\-$€%^&amp;amp;*? ~].*\d.*[A-Z].*))$/i;
-			//var regex = /.*\d.*\w.*\D.*/i;
-			//if (!regex.test(str)) {msg= ("bad_char");}
-			
-			if (msg != '') {
-				//$('.checkInputsError').removeClass("hidden");
-				//$('.checkInputsPassword').removeClass("hidden").html('Password: '+msg);
-				return false;
-			}else{
-				//$('.checkInputsPassword').addClass("hidden").html('');
-				return true;
-			}
-		
+	validateEmail = function (email) {
 
-		
+	//function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
+
+	/*
+	 @ Check Password
+	 https://regex101.com/r/TzK4Sp/1
+	 https://stackoverflow.com/questions/33670870/regex-for-1-uppercase-1-special-character-and-1-lowercase
+	*/
+	validatePassword = function (val) {
+		var regex = /^(?=.{12,255})(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$€§%^£!»©«&*|←↓→+=¥½&<>;:.µ,^~¨¤{}´`+"()'/ \\-]).*$/g
+		var regex = /^(?=.{12,255})(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$€§%^£!»©«&*|←↓→+=¥½&<>;:.µ,^~¨¤{}´?`+"()'/ \\-]).{1,255}$/g
+		return regex.test(val);
 	}
 	
 	passwordFun = function (email, pass) {
@@ -3884,240 +4114,192 @@ observer.observe(target, config);
 
 	});
 	
-	//Check if user is logged in
 	/*
-	 @ 'login/session'
-	 @password
-	 @password2
-	 @email
+	@Check if user is logged in
 	*/
-	function checkUserLogin(profile_data) {
-		//var profile_data = (typeof profile_data === 'undefined') ? "" : profile_data;
-		profile_data = (typeof profile_data === 'undefined') ? "" : profile_data;
-	/*
-	var user_profile = { 
-		"email" : "email",
-		"wallet_type" : "regular",	//regular (login normal address), multisig (login multisig address), key (login with private key)
-		"remember_me" : boolean		//true or false (to keep user logged in)
-		"signatures" : 2		// total number of signatures required to spend, should be maximum the total objects of "passwords"
-		"passwords" : [
-			{
-				"password" : "blabla",
-			},
-			{
-				"password" : "blabla",
-			},
-			{
-				"password" : "blabla",
-			}
-		]
-	}
+	function checkUserLogin(sessionData, session = false) {
 
-	
-	//From Login
-	
-		"email" : email,
-		"wallet_type" : "",	//regular (login normal address), multisig (login multisig address), key (login with private key)
-		"remember_me" : remember_me,
-		"passwords" : [
-			{
-				"password" : pass,
-			},
-			{
-				"password" : pass2,
-			}
-		]
+		//check if we have a session, save to sessionData
+		//update global variable for user data
+		if (session == true)
+			profile_data = HTML5.sessionStorage('profile_data').get();
+			//console.log('session restored from HTML5')
+			//console.log('sessionData: ' , profile_data);
+
+		if(sessionData == null || sessionData === undefined || Object.keys(sessionData).length === 0) {
+			console.log('sessionData: ', sessionData);
+			return ;
+		}
 		
-	*/
-		var check_profile_data;
-		var remember_me = false;
-		//Check if Remember Me option is set to true, save to HTML5 sessionStorage
-		if (typeof profile_data.passwords !== "undefined") {
-			if( (typeof profile_data.remember_me !== "undefined") &&  profile_data.remember_me.match(/^1|true|checked|on$/)){
-				remember_me = true;
-			}else
-				HTML5.sessionStorage('profile_data').remove();
+		var privkeyaes, privkeyaes2;
+
+		//***Handle login with importing backup wallet
+		if (sessionData.login_type == 'import_backup') {
+			console.log('Login with Importing wallet backup');
 		}
 
-		
-		//Check if Profile Data object keys is undefined
-		if (typeof profile_data.passwords !== "undefined" && typeof profile_data.passwords[0].password !== "undefined" && ( typeof profile_data.email !== "undefined" && typeof profile_data.wallet_type !== "undefined" && typeof profile_data.signatures !== "undefined") ){
-				
-				var pass = profile_data.passwords[0].password;
-				if( checkPassword(pass) ){
-				
-					var email = profile_data.email.toLowerCase();
+		//***Handle login with Private Key wallet
+		if (sessionData.login_type == 'private_key') {
+			console.log('Login with Private Key');
 
-					var s = passwordFun(email, pass);
-								
-					coinjs.compressed = true;
-					var scriptPubKey = "";
-					
-					if (debug) {											
-						console.log('profile_data 1');
-						console.log(profile_data);
-					}
-					//Check Wallet Type
-					//if ( typeof profile_data.passwords[1].password !== "undefined" && checkPassword(profile_data.passwords[1].password) && profile_data.passwords[1].password != "") 
-					//if ( profile_data.passwords[1].password != "") 
-					//	profile_data.wallet_type = "multisig";
-					//else
-					//	profile_data.wallet_type = "regular";
-					
-					if (debug) {
-						console.log('profile_data 2');
-						console.log(profile_data);
-					}
-					//Check for Multisig address and Regular address
-					//if (profile_data.wallet_type == "multisig" && typeof profile_data.passwords[1].password !== "undefined") {
-					if (profile_data.wallet_type == "multisig" ) {
-						
-						//Create Multisig address
-						var pass2 = profile_data.passwords[1].password;
-						if( checkPassword(pass2) ){
-							
-							//Disable the use of creation of a multisig wallet with same public keys
-							if (pass != pass2) {
-								var s2 = passwordFun(email, pass2);
-								var keys = coinjs.newKeys(s);
-								var keys2 = coinjs.newKeys(s2);
-								var keys_combined = [keys.pubkey, keys2.pubkey];
-								
-								//console.log('keys_combined: '+keys_combined);
-								
-								//Check if pubkey is in correct format
-								if(coinjs.pubkeydecompress(keys.pubkey) && coinjs.pubkeydecompress(keys2.pubkey)){
-									//keys_.push(keys.pubkey); keys_.push(keys2.pubkey); console.log('keys_.push: '+keys_);
-									var multisig =  coinjs.pubkeys2MultisigAddress(keys_combined, 2);
-									//address, scriptHash, redeemScript
-									address = multisig["address"];
-									
-									var privkeyaes = CryptoJS.AES.encrypt(keys.wif, s);
-									//console.log('keys.wif: ', keys.wif);
-									//console.log('s: ', s);
+		}
 
-									var privkeyaes2 = CryptoJS.AES.encrypt(keys2.wif, s2);
+		//***Handle login with "email + password" wallet
+		if (sessionData.login_type == 'password') {
 
-									//console.log('keys2.wif: ', keys.wif);
-									//console.log('s2: ', s2);
-									
-									$("#walletKeys .redeemScript_wallet").val(multisig["redeemScript"]);
-									
-									$("#walletKeys .privkey2").val(keys2.wif);
-									$("#walletKeys .pubkey2").val(keys2.pubkey);
-									$("#walletKeys .privkeyaes2").val(privkeyaes2);
-									$("#walletKeys .wallet_multisig_keys").removeClass("hidden");
-							
-
-								}else{
-									$("#openLoginStatus").html("Error while creating Multisig address").removeClass("hidden").fadeOut().fadeIn();
-								}
-
-							}else{
-								$("#openLoginStatus").html("You must use 2 different passwords!").removeClass("hidden").fadeOut().fadeIn();
-							}
-
-						} else {
-							$("#openLoginStatus").html("Your 2nd password must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from \"#$€%&\'()*+,-./:;<=>?@[\]^_`{|}~¤¨½§").removeClass("hidden").fadeOut().fadeIn();							
-						}
-						
-					//Create Regular address
-					}else{
-						
-						var keys = coinjs.newKeys(s);
-						
-						if(coinjs.pubkeydecompress(keys.pubkey)){
-
-							var address = keys.address;
-							var wif = keys.wif;
-							var pubkey = keys.pubkey;
-							var privkeyaes = CryptoJS.AES.encrypt(keys.wif, s);
-							$("#walletKeys .wallet_multisig_keys").addClass("hidden");
-							
-							
-						}else{
-							$("#openLoginStatus").html("Error while creating Regular address").removeClass("hidden").fadeOut().fadeIn();
-						}
-					}
-						if($("#walletSegwit").is(":checked")){
-							var sw = coinjs.segwitAddress(pubkey);
-							address = sw.address;
-						}
-
-						$(".amountCoinSymbol").text(coinjs.symbol);
-						//$("#walletMail").html(email);
-						$("#walletAddress").html(address);
-						$("#walletAddressExplorer").html(address);
-						//$("#walletAddressExplorer").attr('href','http://explorer.bitbay.market/address/'+address);
-						//$("#walletHistory").attr('href','http://explorer.bitbay.market/address/'+address);
-						$("#walletAddressExplorer").attr('href','https://chainz.cryptoid.info/bay/address.dws?'+address+'.htm');
-						$("#walletHistory").attr('href','https://chainz.cryptoid.info/bay/address.dws?'+address+'.htm');
-
-						$("#walletQrCode").html("");
-						var qrcode = new QRCode("walletQrCode");
-						qrcode.makeCode("bitbay:"+address);
+			console.log('Login with Email+Password');
 
 
-						console.log('keys: ', keys);
-						$("#walletKeys .address").val(address);
-						$("#walletKeys .privkey").val(keys.wif);
-						$("#walletKeys .pubkey").val(keys.pubkey);
-						$("#walletKeys .privkeyaes").val(privkeyaes);
-						
-						//Load Wallet for Client
-						if(coinjs.pubkeydecompress(keys.pubkey) || (coinjs.pubkeydecompress(keys2.pubkey))){
-							//Store the profile_data on the Client side with HTML5 sessionStorage
-							if (remember_me)
-								HTML5.sessionStorage('profile_data').set(profile_data);
-							else
-								HTML5.sessionStorage('profile_data').remove();
-					
-							if (profile_data.wallet_type == "multisig"){
-								//BUG ? public keys not displayed on multisig wallet
-								//$("#walletKeys .wallet_maybe_multisig_keys").addClass("hidden");
-							}
-							
-							//Menu Account Info
-							$(".accountSessionLogin").addClass("hidden");
-							$(".accountSessionLogout").removeClass("hidden");
-							$(".walletAddress").text(address);
-              $(".walletAddress").attr("data-original-title", "Wallet Address");
-								
-							$("#openLogin").hide();
-							$("#openWallet").removeClass("hidden").show();
-							//giorgosk
-							$("body").addClass("loggedin").removeClass("loggedout");
+			profile_data.private_keys = [];
+			profile_data.public_keys = [];
 
-							//update global variable for user data
-							profile_data = HTML5.sessionStorage('profile_data').get();
-				
-							//update user balance and set loop for updating the users balance!
-							walletBalance();
-							checkBalanceLoop();
-              
-							
-							
-						}else{
-							$("#openLoginStatus").html("Error Unable to create Address").removeClass("hidden").fadeOut().fadeIn();
-						}
-					
-				} else {
-					$("#openLoginStatus").html("Your password must at least have 12 chars and must include minimum 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character from \"!#$€%&\'()*+,-./:;<=>?@[\]^_`{|}~¤¨½§").removeClass("hidden").fadeOut().fadeIn();
+			//generate first private key
+			coinjs.compressed = true;
+			var s = passwordFun(sessionData.email, sessionData.passwords[0]);
+			var keys = coinjs.newKeys(s);
+
+			//check if generated Regular pubkey is valid
+			if (!coinjs.pubkeydecompress(keys.pubkey)) {
+				$(".walletLoginStatus").html("Error while creating Regular wallet address").removeClass("hidden").fadeOut().fadeIn();
+				return;
+			}
+
+			profile_data.public_keys.push(keys.pubkey);
+			profile_data.private_keys.push(keys.wif);
+
+			//we got a regular wallet address, save key-data to backup-fields
+			if (sessionData.wallet_type == "regular") {
+				profile_data.address = keys.address; //wif, pubkey, address
+				var privkeyaes = CryptoJS.AES.encrypt(keys.wif, s);
+			}
+
+			//is wallet multisig?
+			if (sessionData.wallet_type == "multisig") {
+
+				//create Multisig address
+				var s2 = passwordFun(sessionData.email, sessionData.passwords[1]);
+				var keys2 = coinjs.newKeys(s2);
+				var keys_combined = [keys.pubkey, keys2.pubkey];
+
+				//check if generated Multisig pubkeys is valid
+				if (!coinjs.pubkeydecompress(keys.pubkey) && !coinjs.pubkeydecompress(keys2.pubkey)) {
+					$(".walletLoginStatus").html("Error while creating Multisig wallet address").removeClass("hidden").fadeOut().fadeIn();
+					return;
 				}
-				
-			
-		}
-		
+				profile_data.public_keys.push(keys2.pubkey);
+				profile_data.private_keys.push(keys2.wif);
 
-		$("#openLoginStatus").prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ');
+				var multisig = coinjs.pubkeys2MultisigAddress(keys_combined, 2); //create 2-of-2 multisig wallet
+				profile_data.address = multisig["address"]; //address, scriptHash, redeemScript
+
+				privkeyaes = CryptoJS.AES.encrypt(keys.wif, s);
+				//console.log('keys.wif: ', keys.wif);
+				//console.log('s: ', s);
+				privkeyaes2 = CryptoJS.AES.encrypt(keys2.wif, s2);
+				//console.log('keys2.wif: ', keys.wif);
+				//console.log('s2: ', s2);
+
+				//save key-data to backup-fields
+				profile_data.redeem_script = multisig["redeemScript"];
+
+			}
+
+		}
+
+
+		//***All good! Go on!
+		if (sessionData.wallet_type == "regular") {
+			$('.walletPubKeys .redeemScript_wallet').parent().addClass('hidden');
+			$('.wallet_multisig_keys').addClass('hidden');
+			$('#walletKeys .privkey2').addClass('hidden');
+			$('.walletPubKeys .pubkey2').parent().addClass('hidden');
+			$("#walletKeys .privkeyaes2").addClass('hidden');
+		}
+
+		$("#walletKeys .privkey").val(profile_data.private_keys[0]);
+		$(".walletPubKeys .pubkey").val(profile_data.public_keys[0]);
+		$("#walletKeys .privkeyaes").val(privkeyaes);
+
+		//is wallet multisig?
+		if (sessionData.wallet_type == "multisig") {
+			$(".walletPubKeys .redeemScript_wallet").val(profile_data.redeem_script).parent().removeClass('hidden');;
+			$('.wallet_multisig_keys').removeClass('hidden');
+
+			$("#walletKeys .privkey2").val(profile_data.private_keys[1]).removeClass("hidden");
+			$(".walletPubKeys .pubkey2").val(profile_data.public_keys[1]).parent().removeClass("hidden");
+			$("#walletKeys .privkeyaes2").val(privkeyaes2).removeClass("hidden");
+			$(".walletPubKeys .redeemScript_wallet").removeClass("hidden");
+
+			//check if public keys is sorted
+			//if not throw out a message about that to the client
+			profile_data.pubkey_sorted = isArraySorted(profile_data.public_keys);
+			if (!profile_data.pubkey_sorted)
+				PNotify_helper('BitBay Client Wallet support', 'Your public keys needs to be sorted if you want to import it to the BitBay client wallet!', 'warning');
+		}
+
+		$(".amountCoinSymbol").text(coinjs.symbol);
+		//$("#walletMail").html(email);
+		$("#walletAddress").html(profile_data.address);
+		$("#walletAddressExplorer").html(profile_data.address);
+		//$("#walletAddressExplorer").attr('href','http://explorer.bitbay.market/address/'+address);
+		//$("#walletHistory").attr('href','http://explorer.bitbay.market/address/'+address);
+		$("#walletAddressExplorer").attr('href', 'https://chainz.cryptoid.info/bay/address.dws?' + profile_data.address + '.htm');
+		$("#walletHistory").attr('href', 'https://chainz.cryptoid.info/bay/address.dws?' + profile_data.address + '.htm');
+
+
+		$("#walletQrCode").html("");
+		var qrcode = new QRCode("walletQrCode");
+		qrcode.makeCode("bitbay:" + profile_data.address);
+
+
+		//console.log('keys: ', keys);
+		$(".walletPubKeys .address").val(profile_data.address);
+
+
+		//Remember me - store the sessionData on the Client side with HTML5 sessionStorage 
+		if (sessionData.remember_me)
+			HTML5.sessionStorage('profile_data').set(sessionData);
+		else
+			HTML5.sessionStorage('profile_data').remove();
+
+
+		//Menu Account Info
+		$(".accountSessionLogin").addClass("hidden");
+		$(".accountSessionLogout").removeClass("hidden");
+		$(".walletAddress").text(profile_data.address);
+		$(".walletAddress").attr("data-original-title", "Wallet Address");
+
+		$(".walletLogin").hide();
+		$("#openWallet").removeClass("hidden").show();
+		$("body").addClass("loggedin").removeClass("loggedout");
+
+
+
+		//Update user balance and set loop for updating the users balance!
+		walletBalance();
+		checkBalanceLoop();
+		console.log('End of checkUserLogin');
+		return;
 		
-		copyWalletInfo();	
 	}
-	//Check User Session
-	checkUserLogin(HTML5.sessionStorage('profile_data').get());
+
+	//***Check User Session
+	checkUserLogin(HTML5.sessionStorage('profile_data').get(), true);
 	
 	//Set correct Wallet type
-	$("#openWalletType").change();
+	//$("#openWalletType").change();
 
+	/*
+	@ check the array is sorted
+	*/
+
+	function isArraySorted(boxNumbers) {
+	  for (let i = 1; i < boxNumbers.length; i++) {
+	    if (boxNumbers[i - 1] > boxNumbers[i]) {
+	      return false;
+	    }
+	  }
+	  return true;
+	}
 
 });

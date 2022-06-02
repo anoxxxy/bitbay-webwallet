@@ -100,8 +100,7 @@
                 <span class="glyphicon glyphicon-menu-hamburger"></span>
               </a>
               <ul class="dropdown-menu">
-                <li class="loginhide active"><a href="#wallet" data-toggle="tab">Regular Wallet</a></li>
-                <li class="loginhide"><a href="#wallet" data-toggle="tab" id="multisigwalletLink">MultiSig Wallet</a></li>
+                <li class="loginhide active"><a href="#wallet" id="wallet_options" data-toggle="tab">Wallet</a></li>
                 <li class="logouthide">
                   <a href="#wallet" data-toggle="tab">Wallet
 											<p class="text-left small walletAddress"></p>
@@ -157,54 +156,50 @@
 
       <!-- Dynamic Peg stats & Price tracking !-->
       
-        <div class="row topPanel">
-        <div class="col-md-12">
+    <div class="row topPanel">
+      <div class="col-md-12">
         <div class="row">
           <div class="bs-component">
         
-          <div class="col-md-4 col-sm-4 col-xs-12">
-            <div class="panel panel-default priceTracking">
-              <div class="panel-body coinPrice">
-                  <p><span class="glyphicon glyphicon-briefcase"></span> Price (Ratedb - Github )</p>
-                  <div class="coin_price">
-                    <h4><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></h4>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <div class="panel panel-default priceTracking">
+                <div class="panel-body coinPrice">
+                    <p><span class="glyphicon glyphicon-briefcase"></span> Price (Ratedb - Github )</p>
+                    <div class="coin_price">
+                      <h4><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></h4>
+                        <div class="bayLPrice">
+                            BAY Liquid: <p class="price_track"></p>
+                        </div>
+                        <div class="bayRPrice hidden">
+                            BAY Reserve: <p class="price_track"></p>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4 col-sm-4 col-xs-6">
+              <div class="panel panel-default">
+                <div class="panel-body pegIndex">
+                  <h4 title="Peg index: seems to go up lately..."><span class="glyphicon glyphicon-scale"></span> <span class="currentPegIndex"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> <span class="glyphicon glyphicon-arrow-right"></span></h4>
+                  <p class="nextPegIndex">Next Peg index is 0</p> 
+                </div>
+              </div>
+            </div>
 
-                      <div class="bayLPrice">
-                          BAY Liquid: <p class="price_track"></p>
-                      </div>
-                      <div class="bayRPrice hidden">
-                          BAY Reserve: <p class="price_track"></p>
-                      </div>
-
-                  </div>
+            <div class="col-md-4 col-sm-4 col-xs-6">
+              <div class="panel panel-default">
+                <div class="panel-body accountInfo">
+                  <h4><span class="glyphicon glyphicon-user"></span> <span class="walletAddress"></span> <a href="#wallet" class="walletLogout logouthide" role="button" data-destroy="true"><span title="Logout" class="glyphicon glyphicon-log-out hide logoutIcon"></span></a> </h4>
+                  <p><span class="walletBalance"><a href="#wallet" data-toggle="tab">You are not logged in</a></span></p> 
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div class="col-md-4 col-sm-4 col-xs-6">
-            <div class="panel panel-default">
-              <div class="panel-body pegIndex">
-                <h4 title="Peg index: seems to go up lately..."><span class="glyphicon glyphicon-scale"></span> <span class="currentPegIndex"><span class="glyphicon glyphicon-repeat glyphicon-spin"></span></span> <span class="glyphicon glyphicon-arrow-right"></span></h4>
-                <p class="nextPegIndex">Next Peg index is 0</p> 
-              </div>
-              
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-xs-6">
-            <div class="panel panel-default">
-              <div class="panel-body accountInfo">
-                
-                <h4><span class="glyphicon glyphicon-user"></span> <span class="walletAddress"></span> <a href="#wallet" class="walletLogout logouthide" role="button" data-destroy="true"><span title="Logout" class="glyphicon glyphicon-log-out hide logoutIcon"></span></a> </h4>
-                <p><span class="walletBalance"><a href="#wallet" data-toggle="tab">You are not logged in</a></span></p> 
-              </div>
-              
-            </div>
-          </div>
           
           
+          </div>
         </div>
       </div>
-    </div>
     </div>
 
 
@@ -212,15 +207,105 @@
       <div class="tab-content">
 
         <div class="tab-pane tab-content active" id="wallet">
-          <div class="row">
-            <div class="col-md-12">
-              <!-- <h2>Bitbay offline Wallet <small> browser based offline wallet</small></h2> !-->
 
-              <!-- User Wallet Login Form !-->
-              <div class="row">
-                <div id="openLogin">
 
-                  <form name="form-signin" id="form-signin" class="form-signin" role="form" action="javascript:;" autocomplete="off">
+          <!-- BitBay Logo 
+          <div class="row justify-content-center">
+            <div class="col-md-6 d-flex justify-content-center">
+              <div class="login-container text-center">
+                <div class="bitbay-logo"><img src="assets/images/bitbay-logo-medium.png" alt="BitBay Logo"></div>
+              </div>
+            </div>
+          </div
+          !-->
+
+
+          <!-- Login Multistep Wizard Box!-->
+          <div class="">
+           <div class="row flex justify-content-center loginhide">
+            
+            <div class="col-md-6 login-container">
+            <div class="box box-without-top-border">
+            <div class="box-header text-center">
+              <h3 class="box-title no-border hide">Connect!</h3>
+              <div class="bitbay-logo"><img src="assets/images/bitbay-logo-medium.png" alt="BitBay Logo"></div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+
+
+            <!-- Back button !-->
+            <div class="btn btn-default hide m-l-1 " id="multistep-wizard-reset">&larr; Back</div>
+
+            <!-- Login Options & Login Navigation !-->
+            <section class="login-box multistep_progress_bar" data-wallet-login-multistep-wizard="options">
+              <div data-multistep-wizard-step="2" class="callout callout-no-border callout-hover no-bottom-border-radius no-bottom-margin cursor-pointer p-2">
+                <div class="d-flex">
+                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-briefcase align-self-center"></span></div> 
+                  <div class="d-flex flex-column text-left align-self-center p-l-2">
+                    <span class="font-heading font-semibold">Regular Wallet</span> 
+                    <span class="font-body-small text-gray">Connect using browser wallet</span>
+                  </div> 
+                  <span class="glyphicon glyphicon-triangle-right align-self-center font-gray ml-auto"></span>
+                </div>
+              </div>
+              
+              <div data-multistep-wizard-step="3" class="callout callout-no-border callout-hover no-top-margin no-bottom-margin  no-bottom-border-radius no-top-border-radius no-border-radius cursor-pointer p-2">
+                <div class="d-flex">
+                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-briefcase align-self-center"></span></div> 
+                  <div class="d-flex flex-column text-left align-self-center p-l-2">
+                    <span class="font-heading font-semibold">Multisignature Wallet</span>
+                    <span class="font-body-small text-gray">2-of-2 Wallet Address!</span>
+                  </div> 
+                  <span class="glyphicon glyphicon-triangle-right align-self-center font-gray ml-auto"></span>
+                </div>
+              </div>
+              
+              <div data-multistep-wizard-step="4" class="callout callout-no-border callout-hover no-top-margin no-bottom-margin  no-bottom-border-radius no-top-border-radius no-border-radius cursor-pointer p-2">
+                <div class="d-flex">
+                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-qrcode align-self-center"></span></div> 
+                  <div class="d-flex flex-column text-left align-self-center p-l-2">
+                    <span class="font-heading font-semibold">Login with Private Key</span>
+                    <span class="font-body-small text-gray">Connect using private key!</span>
+                  </div> 
+                  <span class="glyphicon glyphicon-triangle-right align-self-center font-gray ml-auto"></span>
+                </div>
+              </div>
+              
+              <div data-multistep-wizard-step="5" class="callout callout-no-border callout-hover no-top-margin no-bottom-margin  no-bottom-border-radius no-top-border-radius no-border-radius cursor-pointer p-2">
+                <div class="d-flex">
+                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-open align-self-center"></span></div> 
+                  <div class="d-flex flex-column text-left align-self-center p-l-2">
+                    <span class="font-heading font-semibold">Import Wallet</span>
+                    <span class="font-body-small text-gray">Import your wallet backup!</span>
+                  </div> 
+                  <span class="glyphicon glyphicon-triangle-right align-self-center font-gray ml-auto"></span>
+                </div>
+              </div>
+              
+              <div data-multistep-wizard-step="6" class="callout callout-no-border callout-hover no-top-margin no-top-border-radius cursor-pointer p-2">
+                <div class="d-flex">
+                  <div class="logo-wallet-icon d-flex align-self-center"><span class="glyphicon glyphicon-cog align-self-center"></span></div> 
+                  <div class="d-flex flex-column text-left align-self-center p-l-2">
+                    <span class="font-heading font-semibold">Advanced</span>
+                    <span class="font-body-small text-gray">For experienced users!</span>
+                  </div> 
+                  <span class="glyphicon glyphicon-triangle-right align-self-center font-gray ml-auto"></span>
+                </div>
+              </div>
+            </section>
+
+
+
+
+    
+    <!-- Regular Wallet -->
+    <section class="login-box hide" data-wallet-login-multistep-wizard="regular_multisig">
+      <div class="walletLogin">
+
+                  <div class="callout callout-no-border m-1">
+
+                  <form name="form-signin-password" id="form-signin-password" class="form-signin-password" role="form" action="javascript:;" autocomplete="off">
                     <fieldset>
 
                       <div class="form-wallettype">
@@ -290,29 +375,35 @@
                       <div class="form-group input-group form-password">
                         <input id="openPass" name="openPass" type="password" class="form-control" placeholder="Password" required>
                         <span class="input-group-btn">
-														<button class="showKey btn btn-default" type="button">Show</button>
-													</span>
+                            <button class="showKey btn btn-default" type="button">Show</button>
+                          </span>
                       </div>
                       <div class="form-group input-group form-password-confirm">
                         <input id="openPass-confirm" name="openPass-confirm" type="password" class="form-control confirm-input" placeholder="Password Confirm" confirm="#openPass">
                         <span class="input-group-btn">
-														<button class="showKey btn btn-default" type="button">Show</button>
-													</span>
+                            <button class="showKey btn btn-default" type="button">Show</button>
+                          </span>
                       </div>
                       <div class="form-group input-group form-password2 hidden">
                         <input id="openPass2" name="openPass" type="password" class="form-control" placeholder="Password2">
                         <span class="input-group-btn">
-														<button class="showKey btn btn-default" type="button">Show</button>
-													</span>
+                            <button class="showKey btn btn-default" type="button">Show</button>
+                          </span>
                       </div>
                       <div class="form-group input-group form-password2-confirm hidden">
                         <input id="openPass2-confirm" name="openPass-confirm" type="password" class="form-control confirm-input" placeholder="Password2 Confirm" confirm="#openPass2">
                         <span class="input-group-btn">
-														<button class="showKey btn btn-default" type="button">Show</button>
-													</span>
+                            <button class="showKey btn btn-default" type="button">Show</button>
+                          </span>
                       </div>
+                    </form>
+                  </div>
+
+
+
+                  <div class="callout callout-no-border m-1">
                       <div class="form-group">
-                        <div id="openLoginStatus" class="alert alert-danger hidden"></div>
+                        <div class="alert alert-danger hidden walletLoginStatus"><span class="glyphicon glyphicon-exclamation-sign"></span> </div>
                       </div>
                       <div class="form-group form-confirm-pass checkbox">
                           <label for="confirmPass"><input id="confirmPass" type="checkbox" checked>
@@ -322,28 +413,129 @@
                       <div class="form-group form-accept checkbox">
                         <p class="alert alert-danger">No email/password is stored on our server. If you forget your email or password it CANNOT be recovered! You can print/backup your wallet after you login.</p>
                         
-                        <label for="acceptTerms">
-                          <input id="acceptTerms" type="checkbox"> I have read the <a href="#disclaimer" role="button" class="btn-flat" data-toggle="modal">disclaimer</a> and have stored my login information
+                        <label >
+                          <input class="acceptTerms" type="checkbox"> I have read the <a href="#disclaimer" role="button" class="btn-flat" data-toggle="modal">disclaimer</a> and have stored my login information
                         </label>
                       </div>
                       <div class="form-group" >
                         <span class="button-checkbox checkbox">
-													<label for="remember">
-                          <input id="remember" type="checkbox">Stay Logged in (until browser tab closes)</label>
-													<button type="button" class="btn-flat hidden" data-color="info">Remember Me</button>
-													<select class="form-control hide" id="rememberMe">
-														<option value="false" selected="selected">No</option>
-														<option value="true">Yes</option>
-													</select>
-												</span>
+                          <label>
+                          <input  class="loginRemember" type="checkbox">Stay Logged in (until browser tab closes)</label>
+                          <button type="button" class="btn-flat hidden" data-color="info">Remember Me</button>
+                          <select class="form-control hide rememberMe" id="rememberMe">
+                            <option value="false" selected="selected">No</option>
+                            <option value="true">Yes</option>
+                          </select>
+                        </span>
                       </div>
                       <div class="form-group form-submit">
-                        <input id="openBtn" type="submit" class="btn-flatbay btn-flatbay-inactive" value="Load/Create Wallet">
+                        <input type="submit" class="btn-flatbay btn-flatbay-inactive loginButton" value="Load/Create Wallet">
                       </div>
-                      <div id="errormessages"></div>
-                    </fieldset>
-                  </form>
+
+                    </div>
+
+                    
+                  
                 </div>
+    </section>
+
+    <section class="callout callout-no-border m-1 login-box hide" data-wallet-login-multistep-wizard="empty">
+    </section>
+    <!-- Multisig Wallet -->
+    <section class="login-box hide" data-wallet-login-multistep-wizard="private_key">
+
+      <div class="callout callout-no-border m-1">
+        <div class="form-group input-group">
+          <input name="openPrivateKey" type="password" class="form-control" placeholder="Private Key 1" required>
+          <span class="input-group-btn">
+              <button class="showKey btn btn-default" type="button">Show</button>
+            </span>
+        </div>
+        <div class="form-group input-group hidden">
+          <input name="openPrivateKey" type="password" class="form-control" placeholder="Private Key 2">
+          <span class="input-group-btn">
+              <button class="showKey btn btn-default" type="button">Show</button>
+            </span>
+        </div>
+
+          <button id="loginExtraPrivateKey" type="button" class="btn btn-default btn-block">+ Add second private key</button>
+
+      </div>
+
+        <div class="callout callout-no-border m-1" >
+
+          <div class="form-group">
+            <div class="alert alert-danger hidden walletLoginStatus"><span class="glyphicon glyphicon-exclamation-sign"></span> </div>
+          </div>
+
+          
+          <div class="form-group form-accept checkbox">
+            <p class="alert alert-danger">No email/password is stored on our server. If you forget your email or password it CANNOT be recovered! You can print/backup your wallet after you login.</p>
+            
+            <label>
+              <input class="acceptTerms" type="checkbox"> I have read the <a href="#disclaimer" role="button" class="btn-flat" data-toggle="modal">disclaimer</a> and have stored my login information
+            </label>
+          </div>
+
+          <div class="form-group" >
+            <span class="button-checkbox checkbox">
+              <label >
+              <input class="loginRemember" type="checkbox">Stay Logged in (until browser tab closes)</label>
+              <button type="button" class="btn-flat hidden" data-color="info">Remember Me</button>
+              <select class="form-control hide rememberMe" name="rememberMe">
+                <option value="false" selected="selected">No</option>
+                <option value="true">Yes</option>
+              </select>
+            </span>
+          </div>
+          
+          <div class="form-group form-submit">
+            <input id="openBtnPrivateKey" type="submit" class="btn-flatbay btn-flatbay-inactive" value="Load/Create Wallet">
+          </div>
+
+        </div>
+    </section>
+    <section class="callout callout-no-border m-1 login-box hide" data-wallet-login-multistep-wizard="import_wallet">
+      <p>Sorry but I am Under Construction. /Regards Alice and Bob!</p>
+    </section>
+    <section class="callout callout-no-border m-1 login-box hide" data-wallet-login-multistep-wizard="advanced">
+      <p>Sorry but I am Under Construction. /Regards Alice and Bob!</p>
+    </section>
+    <section class="callout callout-no-border m-1 login-box hide" data-wallet-login-multistep-wizard="disclamer_wizard">
+      <p>General condtitions</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </section>
+    
+    <div class="btn btn-default hidden" id="submit">Agree and send application</div>
+
+
+
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer text-center">
+              Bitbay Web Wallet <span class="walletVersion"></span>
+            </div>
+            <!-- /.box-footer -->
+          </div>
+          </div>
+          
+            
+            </div>
+          </div>
+
+
+
+
+
+          <!-- Old Login !-->
+          <div class="row">
+            <div class="col-md-12">
+              <!-- <h2>Bitbay offline Wallet <small> browser based offline wallet</small></h2> !-->
+
+              <!-- User Wallet Login Form !-->
+              <div class="row">
+                
               </div>
 
               <!-- Modal HTML -->
@@ -432,7 +624,7 @@
                           </ul>
 
 
-                          <div class="tab-content" id="WalletTabContent">
+                          <div class="tab-content box box-without-top-border" id="WalletTabContent">
                             <div class="tab-pane fade" id="walletBackup">
                               <div class="backuptext">
                                 The following information can be used to recover your account and funds. You can manually copy them or print them and store them in a safe place.
@@ -446,17 +638,7 @@
                                 in here will populate with wallet info
                               </div>
                               <div id="walletKeys">
-                                <div class="share-yes">
-                                  <label>Address (Share)</label>
-                                  <input class="form-control address can-copy" type="text" readonly>
 
-                                  <label class="wallet_multisig_keys">RedeemScript (Share)</label>
-                                  <input class="form-control can-copy redeemScript_wallet wallet_multisig_keys" type="text" readonly>
-
-                                  <label class="wallet_maybe_multisig_keys">Public key (Share)</label>
-                                  <input class="form-control pubkey wallet_maybe_multisig_keys can-copy" type="text" readonly>
-                                  <input class="form-control pubkey2 wallet_multisig_keys wallet_maybe_multisig_keys can-copy" type="text" readonly>
-                                </div>
 
                                 <div class="share-no">
                                   <label>Private key - WIF key (Private - Don't share)</label>
@@ -495,22 +677,7 @@
                                 <p class="text-muted">This page uses javascript to generate your addresses and sign your transactions within your browser, this means we <i>never</i> receive your private keys, this can be independently verified by reviewing the source code on <a href="https://github.com/bitbaymarket/web-wallet" target="_blank">github</a>.</p>
                               </div>
                             </div>
-                            <div class="tab-pane fade" id="walletInfo">
-                              - <a class="ul" href="https://bitcointalk.org/index.php?topic=890531.0" target="_blank">Bitcointalk</a>
-                              <br> - <a class="ul" href="https://twitter.com/bitbaytalk" target="_blank">Twitter</a>
-                              <br> - <a class="ul" href="https://www.facebook.com/bitbaymarket" target="_blank">Facebook</a>
-                              <br> - <a class="ul" href="https://plus.google.com/communities/114750118216930193130" target="_blank">Google+</a>
-                              <br> - <a class="ul" href="http://bitbay.market/" target="_blank">The new and improved Official Site!</a>
-                              <br> - <a class="ul" href="http://bitbaymarket.net/" target="_blank">The original Mirror Site linking directly to Halo ftp</a>
-                              <br>
-                              <br> Telegram: <a href="https://t.me/bitbayofficial" target="_blank">@bitbayofficial</a>
-                              <br> Slack: <a href="http://bitbay.slack.com/" target="_blank">http://bitbay.slack.com/</a>
-                              <br>
-                              <br> Want to see where all the action is?
-                              <br> Most of the fun, testing and core community chat happens on slack! Please join us there by using this link:
-                              <br>
-                              <a class="ul" href="http://bitbay.market/wp-login.php?action=slack-invitation" target="_blank">http://bitbay.market/wp-login.php?action=slack-invitation</a>
-                            </div>
+
                             <div class="tab-pane fade active in" id="walletSpendTab">
                               <div id="walletSpend">
           
@@ -571,9 +738,40 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="tab-pane fade" id="walletKeysTab">
-                              <div id="walletKeysCopy">
-                              </div>
+                            <div class="tab-pane fade walletPubKeys" id="walletKeysTab">
+                              
+                                <label>Address (Share)</label>
+                                
+                                <div class="input-group" data-original-title="" title="">
+                                  <input type="text" class="form-control address can-copy">
+                                  <span class="input-group-btn" data-original-title="" title="">
+                                    <button class="btn btn-default copy-input" type="button" >Copy</button>
+                                  </span>
+                                </div>
+
+                                <label class="wallet_multisig_keys">RedeemScript (Share)</label>
+                                <div class="input-group" data-original-title="" title="">
+                                  <input type="text" class="form-control can-copy redeemScript_wallet wallet_multisig_keys">
+                                  <span class="input-group-btn" data-original-title="" title="">
+                                    <button class="btn btn-default copy-input" type="button" >Copy</button>
+                                  </span>
+                                </div>
+
+
+                                <label class="wallet_maybe_multisig_keys">Public key (Share)</label>
+                                <div class="input-group" data-original-title="" title="">
+                                  <input type="text" class="form-control pubkey wallet_maybe_multisig_keys can-copy">
+                                  <span class="input-group-btn" data-original-title="" title="">
+                                    <button class="btn btn-default copy-input" type="button" >Copy</button>
+                                  </span>
+                                </div>
+                                <div class="input-group" data-original-title="" title="">
+                                  <input type="text" class="form-control pubkey2 wallet_multisig_keys wallet_maybe_multisig_keys can-copy">
+                                  <span class="input-group-btn" data-original-title="" title="">
+                                    <button class="btn btn-default copy-input" type="button" >Copy</button>
+                                  </span>
+                                </div>
+
                             </div>
                           </div>
                         </div>
@@ -581,19 +779,22 @@
                       <div class="col-md-4">
                         <div class="bs-component panel-right">
                           <!-- QR Code -->
-                          <div class="panel panel-default panel-qrcode">
+                          <div class="panel panel-default box box-without-top-border panel-qrcode">
                             <div class="panel-heading">
                               <label>Your Address:</label>
+                            </div>
+                            <div class="panel-body text-center ">
+
+
+                              <div id="walletQrCode"></div>
+                              <hr>
                               <span class="hide" id="walletAddress"></span>
                               <a href="#" id="walletAddressExplorer" target="_blank"></a>
-                            </div>
-                            <div class="panel-body text-center">
-                              <div id="walletQrCode"></div>
                             </div>
                           </div>
                           
                           <!-- Balance & Pie Chart -->
-                          <div class="panel panel-default panel-balance">
+                          <div class="panel panel-default panel-balance box box-without-top-border">
                             <div class="panel-body">
 
                               
