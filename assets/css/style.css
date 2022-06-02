@@ -1976,14 +1976,9 @@ border-top: 0 solid rgba(0,0,0,.125);
 }
 
 .login-container section {
-  
-  
+
   margin: 5px auto;
-  
-  
-  
-  
-  
+
   transition: transform 0.2s ease-in-out;
 }
 /*
@@ -2047,6 +2042,7 @@ p {
   padding: 0;
   /*min-width: 450px;*/
   max-width: 450px;
+  flex: 1;
 }
 .login-container .box-header > .box-title {
   color: #333;

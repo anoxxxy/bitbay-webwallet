@@ -520,7 +520,7 @@ profile_data = {
 		$(".accountSessionLogout").addClass("hidden");
 		$(".accountSessionLogin").removeClass("hidden");
     
-    $(".topPanel .glyphicon.glyphicon-log-out").addClass("hide");
+    $(".topPanel .bibi-box-arrow-left").addClass("hide");
     
 		
 		$(".walletLogin").show();
@@ -734,7 +734,7 @@ profile_data = {
 								$("#walletSendConfirmStatus").removeClass("hidden").removeClass('alert-danger').addClass('alert-success').html(mess);
 	
 								if (devamountVal > 0)
-									$("#walletSendConfirmStatus").html( $("#walletSendConfirmStatus").html() + '<br /> <span class="glyphicon glyphicon-heart"></span> Thank you very much for your donation');
+									$("#walletSendConfirmStatus").html( $("#walletSendConfirmStatus").html() + '<br /> <i class="bi bi-suit-heart-fill"></i> Thank you very much for your donation');
 								$("#walletConfirmSend").html("Send");
 								$("#walletConfirmSend").addClass("hidden");
 							} else {	//$("#walletSendConfirmStatus").removeClass("hidden").addClass('alert-danger').html(unescape(callback_result).replace(/\+/g,' '));
@@ -930,7 +930,7 @@ profile_data = {
 								$("#walletSendConfirmStatus").removeClass("hidden").removeClass('alert-danger').addClass('alert-success').html(mess);
 	
 								if (devamountVal > 0)
-									$("#walletSendConfirmStatus").html( $("#walletSendConfirmStatus").html() + '<br /> <span class="glyphicon glyphicon-heart"></span> Thank you very much for your donation');
+									$("#walletSendConfirmStatus").html( $("#walletSendConfirmStatus").html() + '<br /> <i class="bi bi-suit-heart-fill"></i> Thank you very much for your donation');
 
 								$("#walletConfirmSend").html("Send");
 								$("#walletConfirmSend").addClass("hidden");
@@ -1188,8 +1188,8 @@ async function init_broadcast_progress_bar(txinputs_total, manualTransaction=1) 
     
 		var clone = '<div class="form-horizontal output">'+$(this).parent().html()+'</div>';
     $("#walletSpendTo").append(clone);
-		$("#walletSpendTo .glyphicon-plus:last").removeClass('glyphicon-plus').addClass('glyphicon-minus');
-		$("#walletSpendTo .glyphicon-minus:last").parent().removeClass('addressAdd').addClass('addressRemove');
+		$("#walletSpendTo .bi-plus:last").removeClass('bi-plus').addClass('bi-dash');
+		$("#walletSpendTo .bi-dash:last").parent().removeClass('addressAdd').addClass('addressRemove');
     
     //hide and unbind the old tooltips, bind the new one
 		$("#walletSpendTo .tooltip").hide();
@@ -1278,14 +1278,14 @@ async function init_broadcast_progress_bar(txinputs_total, manualTransaction=1) 
         
         if(data.result.pegnext > data.result.peg){
           $(".pegIndex h4").attr("data-original-title", "Peg-Index seems to increase lately...");
-          $(".pegIndex h4 span.glyphicon:nth-child(3)").removeClass("glyphicon-arrow-down").addClass("glyphicon-arrow-up");
+          $(".pegIndex h4 i.bi:nth-child(3)").removeClass("bi-arrow-down-short").addClass("bi-arrow-up-short");
         }else if(data.result.pegnext == data.result.peg){
         
         $(".pegIndex h4").attr("data-original-title", "Peg-Index is unchanged");
-          $(".pegIndex h4 span.glyphicon:nth-child(3)").removeClass("glyphicon-arrow-up").removeClass("glyphicon-arrow-down").addClass("glyphicon glyphicon-arrow-right");
+          $(".pegIndex h4 i.bi:nth-child(3)").removeClass("bi-arrow-up-short").removeClass("bi-arrow-down-short").addClass("bi bi-arrow-right-short");
         }else{
           $(".pegIndex h4").attr("data-original-title", "Peg-Index seems to decrease lately...");
-          $(".pegIndex h4 span.glyphicon:nth-child(3)").removeClass("glyphicon-arrow-up").addClass("glyphicon-arrow-down");
+          $(".pegIndex h4 i.bi:nth-child(3)").removeClass("bi-arrow-up-short").addClass("bi-arrow-down-short");
         }
       }
     });
@@ -1318,7 +1318,7 @@ async function init_broadcast_progress_bar(txinputs_total, manualTransaction=1) 
 				}
 				$(".walletBalance").html(newBalance+" "+coinjs.symbol).attr('rel',newBalance).fadeOut().fadeIn();
 				$(".topPanel .walletBalance").text("Balance: " + newBalance).attr('rel',newBalance).fadeOut().fadeIn();
-				$(".topPanel .glyphicon.glyphicon-log-out").removeClass("hide");
+				$(".topPanel .bi.bi-box-arrow-left").removeClass("hide");
 				$(".walletBalanceLiquid").html(newLiquid+" "+coinjs.symbol).attr('rel',newLiquid);
 				$(".walletBalanceReserve").html(newReserve+" "+coinjs.symbol+'R').attr('rel',newReserve);
 				$(".walletBalanceFrozen").html(newFrozen+" "+coinjs.symbol).attr('rel',newFrozen);
@@ -1770,8 +1770,8 @@ function drawPieChart(piechart, pegBalanceData) {
 		if($("#multisigPubKeys .pubkeyRemove").length<14){
 			var clone = '<div class="form-horizontal">'+$(this).parent().html()+'</div>';
 			$("#multisigPubKeys").append(clone);
-			$("#multisigPubKeys .glyphicon-plus:last").removeClass('glyphicon-plus').addClass('glyphicon-minus');
-			$("#multisigPubKeys .glyphicon-minus:last").parent().removeClass('pubkeyAdd').addClass('pubkeyRemove');
+			$("#multisigPubKeys .bi-plus:last").removeClass('bi-plus').addClass('bi-dash');
+			$("#multisigPubKeys .bi-dash:last").parent().removeClass('pubkeyAdd').addClass('pubkeyRemove');
 			$("#multisigPubKeys .pubkeyRemove").unbind("");
 			$("#multisigPubKeys .pubkeyRemove").click(function(){
 				$(this).parent().fadeOut().remove();
@@ -1992,8 +1992,8 @@ function drawPieChart(piechart, pegBalanceData) {
 
 			var clone = '<div class="row recipient"><br>'+$(this).parent().parent().html()+'</div>';
 			$("#recipients").append(clone);
-			$("#recipients .glyphicon-plus:last").removeClass('glyphicon-plus').addClass('glyphicon-minus');
-			$("#recipients .glyphicon-minus:last").parent().removeClass('addressAdd').addClass('addressRemoveTo');
+			$("#recipients .bi-plus:last").removeClass('bi-plus').addClass('bi-dash');
+			$("#recipients .bi-dash:last").parent().removeClass('addressAdd').addClass('addressRemoveTo');
 			$("#recipients .addressRemoveTo").unbind("");
 			$("#recipients .addressRemoveTo").click(function(){
 				$(this).parent().parent().fadeOut().remove();
@@ -2131,8 +2131,8 @@ function drawPieChart(piechart, pegBalanceData) {
 
 					//$('#txoutputs #recipients').children().first().remove();
 
-					$("#recipients .glyphicon-plus:last").removeClass('glyphicon-plus').addClass('glyphicon-minus');
-					$("#recipients .glyphicon-minus:last").parent().removeClass('addressAdd').addClass('addressRemoveTo');
+					$("#recipients .bi-plus:last").removeClass('bi-plus').addClass('bi-dash');
+					$("#recipients .bi-dash:last").parent().removeClass('addressAdd').addClass('addressRemoveTo');
 					$("#recipients .addressRemoveTo").unbind("");
 					$("#recipients .addressRemoveTo").click(function(){
 						$(this).parent().parent().fadeOut().remove();
@@ -2222,8 +2222,8 @@ function drawPieChart(piechart, pegBalanceData) {
 					//$('#txoutputs #recipients').children().first().remove();
 					$('#recipients .row.recipient:nth-child('+(i+1)+') input').attr('disabled', false);
 
-					$("#recipients .row.recipient .glyphicon-plus:last").removeClass('glyphicon-plus').addClass('glyphicon-minus');
-					$("#recipients .row.recipient .glyphicon-minus:last").parent().removeClass('addressAdd').addClass('addressRemoveTo');
+					$("#recipients .row.recipient .bi-plus:last").removeClass('bi-plus').addClass('bi-dash');
+					$("#recipients .row.recipient .bi-dash:last").parent().removeClass('addressAdd').addClass('addressRemoveTo');
 					$("#recipients .row.recipient .addressRemoveTo").unbind("");
 					$("#recipients .row.recipient .addressRemoveTo").click(function(){
 						$(this).parent().parent().fadeOut().remove();
@@ -2292,8 +2292,8 @@ function drawPieChart(piechart, pegBalanceData) {
 
 				//$('#txoutputs #recipients').children().first().remove();
 
-				$("#recipients .glyphicon-plus:last").removeClass('glyphicon-plus').addClass('glyphicon-minus');
-				$("#recipients .glyphicon-minus:last").parent().removeClass('addressAdd').addClass('addressRemoveTo');
+				$("#recipients .bi:last").removeClass('bi-plus').addClass('bi-dash');
+				$("#recipients .bi-dash:last").parent().removeClass('addressAdd').addClass('addressRemoveTo');
 				$("#recipients .addressRemoveTo").unbind("");
 				$("#recipients .addressRemoveTo").click(function(){
 					$(this).parent().parent().fadeOut().remove();
@@ -2363,13 +2363,13 @@ function drawPieChart(piechart, pegBalanceData) {
 		
 		
 		//$("#inputs .txidClear:last").remove();
-		//$("#inputs .row:last div:last").append('<a href="javascript:;" class="txidClear" title="Remove TXid input" ><span class="glyphicon glyphicon-minus"></span></a>');
+		//$("#inputs .row:last div:last").append('<a href="javascript:;" class="txidClear" title="Remove TXid input" ><span class="bi bi-dash"></span></a>');
 
-		//$("#inputs .glyphicon-plus:last").removeClass('glyphicon-plus').addClass('glyphicon-minus');
-		$("#inputs .glyphicon-minus:last").parent().removeClass('txidClear').addClass('txidRemove').attr("title", "Remove TXid input");
+		//$("#inputs .bi-plus:last").removeClass('bi-plus').addClass('bi-dash');
+		$("#inputs .bi-dash:last").parent().removeClass('txidClear').addClass('txidRemove').attr("title", "Remove TXid input");
 
-		//$("#inputs .glyphicon-plus:last").addClass('hidden');
-		//$("#inputs .glyphicon-minus:last").parent().removeClass('txidAdd').addClass('txidRemove').attr("title", "Remove TXid input");
+		//$("#inputs .bi-plus:last").addClass('hidden');
+		//$("#inputs .bi-dash:last").parent().removeClass('txidAdd').addClass('txidRemove').attr("title", "Remove TXid input");
 
 		$("#inputs .tooltip:last").remove();
 		$("#inputs .txidRemove").click(function(){
@@ -2577,8 +2577,8 @@ function drawPieChart(piechart, pegBalanceData) {
 				
 
 
-				$("#recipients .row.recipient.send-back-reserve-as-change .glyphicon-plus").removeClass('glyphicon-plus').addClass('glyphicon-minus');
-				$("#recipients .row.recipient.send-back-reserve-as-change .glyphicon-minus").parent().removeClass('addressAdd').addClass('addressRemoveTo');
+				$("#recipients .row.recipient.send-back-reserve-as-change .bi-plus").removeClass('bi-plus').addClass('bi-dash');
+				$("#recipients .row.recipient.send-back-reserve-as-change .bi-dash").parent().removeClass('addressAdd').addClass('addressRemoveTo');
 				$("#recipients .addressRemoveTo").unbind("");
 				$("#recipients .addressRemoveTo").click(function(){
 					$(this).parent().parent().fadeOut().remove();
@@ -2642,8 +2642,8 @@ function drawPieChart(piechart, pegBalanceData) {
 			
 			//add the txIdAdd to the first input
 			/*
-			$('#inputs .row.inputs:nth-child(1) div:last').addClass('has-success').prepend('<a href="javascript:;" class="txidAdd" title="Add new TXid input"><span class="glyphicon glyphicon-plus"></span></a>');
-			//$("#inputs .txId:first").prepend('<a href="javascript:;" class="txidAdd" title="Add new TXid input"><span class="glyphicon glyphicon-plus"></span></a>');
+			$('#inputs .row.inputs:nth-child(1) div:last').addClass('has-success').prepend('<a href="javascript:;" class="txidAdd" title="Add new TXid input"><span class="bi bi-plus"></span></a>');
+			//$("#inputs .txId:first").prepend('<a href="javascript:;" class="txidAdd" title="Add new TXid input"><span class="bi bi-plus"></span></a>');
 
 			//$("#inputs .row.inputs:nth-child(1) div:last .txidAdd").removeClass("hidden");
 			
@@ -2903,7 +2903,7 @@ observer.observe(target, config);
 						var clone = '<span><div class="row recipients mediator mediator_'+pubkey+'" rel="'+redeem.addr+'">'+$("#recipients .addressAddTo").parent().parent().html()+'</div><br></span>';
 						$("#recipients").prepend(clone);
 
-						$("#recipients .mediator_"+pubkey+" .glyphicon-plus:first").removeClass('glyphicon-plus');
+						$("#recipients .mediator_"+pubkey+" .bi-plus:first").removeClass('bi-plus');
 						$("#recipients .mediator_"+pubkey+" .address:first").val(payto).attr('disabled', true).attr('readonly',true).attr('title','Medation fee for '+$(mo).html());
 
 						var amount = ((fee*$("#totalInput").html())/100).toFixed(8);

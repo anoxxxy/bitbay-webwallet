@@ -351,21 +351,11 @@ $(document).ready(function() {
 
 		$button.on('click', function () {
 			
-			/*
-			if ( !$checkbox.is(':checked') )
-				$checkbox.attr('checked', true);
-			else
-				$checkbox.removeAttr('checked');
-			*/
-			
-			//$("select#rememberMe option[value]")..prop('selected', 'selected');
 			if ($checkbox.val() !=  'true')
 				$checkbox.val('true');
 			else
 				$checkbox.val('false');
-			
-			//$checkbox.prop('checked', !$checkbox.is(':checked'));
-			//$checkbox.triggerHandler('change');
+
 			updateDisplay();
 		});
 
