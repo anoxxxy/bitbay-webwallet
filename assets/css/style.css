@@ -1,5 +1,56 @@
 @import 'fonts/pangram-sans-rounded/styles.css';
 
+/* 
+Prepare for dark mode theme
+:root {
+  --body-bg-color: #6456ab;
+  --body-bg--loggedin-color: #f0f0f0;
+  --theme-bg-color: #fafafb;
+  --body-font: "Poppins", sans-serif;
+  --body-color: #2f2f33;
+  --active-color: #0162ff;
+  --active-light-color: #e1ebfb;
+  --header-bg-color: #fff;
+  --search-border-color: #efefef;
+  --border-color: #d8d8d8;
+  --alert-bg-color: #e8f2ff;
+  --subtitle-color: #83838e;
+  --inactive-color: #f0f0f0;
+  --placeholder-color: #9b9ba5;
+  --time-button: #fc5757;
+  --level-button: #5052d5;
+  --button-color: #fff;
+}
+
+.dark-mode {
+  --body-bg-color: #0b1727;
+  --body-bg--loggedin-color: #0b1727;
+  --theme-bg-color: #13131a;
+  --header-bg-color: #1c1c24;
+  --alert-bg-color: #292932;
+  --body-color: #fff;
+  --inactive-color: #292932;
+  --time-button: #fff;
+  --level-button: #fff;
+  --active-light-color: #263d63;
+  --border-color: #26262f;
+  --search-border-color: #26262f;
+}
+*/
+
+::-moz-placeholder {
+  color: var(--placeholder-color);
+}
+
+:-ms-input-placeholder {
+  color: var(--placeholder-color);
+}
+
+::placeholder {
+  color: var(--placeholder-color);
+}
+
+
 html {
 	height: 100%;
 	box-sizing: border-box;
@@ -186,6 +237,26 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 		margin: 0 15px;
 	}
 }
+
+.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
 .modal-content {
 	border-radius: 0px;
 	box-shadow: none;
@@ -193,7 +264,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .modal-open .modal {
 	background: rgba(0, 0, 0, 0.7);
 }
-.modal-dialog {
+#disclaimer .modal-dialog {
   max-width: 800px;
 	width: auto;
 }
@@ -322,6 +393,7 @@ max-width: calc(100% - 100px);
 	margin: 0 auto;
 	display: block;
 }
+#qr-reader button,
 .btn-flatbay {
   display: inline-block;
   padding: 13px 60px;
@@ -337,6 +409,7 @@ max-width: calc(100% - 100px);
 	border: none;
 	border-radius: 0px;
 }
+
 @media (max-width: 400px){
 	.btn-flatbay {
 	  padding: 13px 20px;
@@ -713,13 +786,7 @@ input[type="checkbox"].filled:not(:disabled):after {
 	margin: 10px 0;
 	text-align: center;	
 }
-.danger-area {
-	background: whitesmoke;
-}
-.danger-area h2 {
-	color: red;	
-	margin: 0 10px;
-}
+
 .unconfirmed {
 	border: 1px solid red !important;
 }
@@ -978,10 +1045,18 @@ fieldset[disabled] .form-control.can-copy {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
-.input-group .input-group-btn,
-.input-group .input-group-btn *,
-.input-group .input-group-addon,
-.input-group .input-group-addon * {
+.input-group .input-group-btn:first-child,
+.input-group .input-group-btn:first-child *,
+.input-group .input-group-addon:first-child,
+.input-group .input-group-addon:first-child * {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.input-group .input-group-btn:last-child,
+.input-group .input-group-btn:last-child *,
+.input-group .input-group-addon:last-child,
+.input-group .input-group-addon:last-child * {
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }
@@ -1142,7 +1217,7 @@ fieldset[disabled] .form-control.can-copy {
   display: block;
 }
 /* Custom */
-.glyphicon-spin {
+.glyphicon-spin, .icon-spin {
   -webkit-animation: spin 2s infinite linear;
   -moz-animation: spin 2s infinite linear;
   -o-animation: spin 2s infinite linear;
@@ -1306,6 +1381,7 @@ https://codepen.io/githiro/pen/xABCi
 	top: -3vh;
 	margin-bottom: 2vh;
 	margin: 0 auto;
+	padding-top: 10px;
 }
 
 .pieTip {
@@ -1531,9 +1607,9 @@ font-size: 48px;
     color: #6e798f;
 }
 .font-heading { 
-font-size: 1.8rem;
-color: #333;
-line-height: 1.8;
+	font-size: 1.8rem;
+	color: #333;
+	line-height: 1.8;
 }
 .font-semibold {
     font-weight: 600;
@@ -1552,15 +1628,15 @@ line-height: 1.8;
   margin: 1rem;
   padding: 1rem;
 }
-
+/*
 .callout a {
   color: #495057;
   text-decoration: underline;
 }
-
 .callout a:hover {
   color: #e9ecef;
 }
+*/
 
 .callout p:last-child {
   margin-bottom: 0;
@@ -1585,9 +1661,6 @@ line-height: 1.8;
   border-left-color: #1e7e34;
 }
 
-.dark-mode .callout {
-  background-color: #3f474e;
-}
 
 
 .box{
@@ -1978,9 +2051,11 @@ border-top: 0 solid rgba(0,0,0,.125);
 .login-container section {
 
   margin: 5px auto;
-
   transition: transform 0.2s ease-in-out;
 }
+
+.login-container section[data-wallet-login-multistep-wizard="private_key"] .input-group-btn:first-child button:first-child {
+	}
 /*
 input {
   width: 100%;
@@ -2055,4 +2130,139 @@ p {
 .bitbay-logo img{
   width: 200px;
   margin: 2rem 0 0.5rem;
+}
+
+/*import wallet backup*/
+
+.file-drop-area {
+  position: relative;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+	flex-direction: column;
+  max-width: 100%;
+  padding: 10px 10px;
+  border: 1px dashed #6545ab;
+  border-radius: 10px;
+  transition: 0.2s;
+  box-shadow:0 1px 1px rgba(0,0,0,0.1);
+	box-shadow: 0 1px 4px rgba(0,0,0,.08);
+	box-shadow: 0 0 1px rgba(0,0,0,.125),0 1px 3px rgba(0,0,0,.2);
+
+}
+.file-drop-area.is-active,
+.file-drop-area.is-active-imported,
+.file-drop-area:hover{
+  background-color: #7d69c797;
+  border-style: solid;
+  color: #fff;
+}
+.file-drop-area.is-active-imported {
+	background-color: #dff0d8;
+	color: #468847;
+}
+
+
+.fake-btn {
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  padding: 8px 15px;
+  margin-right: 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+.fake-btn .bi {
+	font-size: 20px;
+	top: 2px;
+	position: relative;
+}
+.file-msg {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-top: 5px;
+  max-width: 250px;
+}
+
+.file-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+.file-input:focus {
+  outline: none;
+}
+
+/*bootstrap dialog custom*/
+.modal-dialog button,
+.modal-dialog input,
+.modal-dialog * {
+	border-radius: 15px !important;
+}
+.modal-dialog .modal-content {
+	border-radius: 15px !important;
+}
+.modal-dialog .modal-header {
+  border-top-left-radius: 15px !important;
+  border-top-right-radius: 15px !important;
+  border-bottom-left-radius: 0 !important;
+	border-bottom-right-radius: 0 !important;
+}
+.modal-dialog .modal-header {
+	/*
+	background-color: #7C69C7 !important;
+	*/
+	background: whitesmoke !important;
+}
+.modal-dialog .modal-header,
+.modal-dialog .modal-header .modal-title,
+.bootstrap-dialog .bootstrap-dialog-title {
+	font-weight: bold;
+	position: relative;
+	top: -2px;
+	color: #333;
+	padding-top: 10px;
+	padding-bottom: 2px;
+	display: flow-root;
+}
+.modal-dialog .modal-header .close,
+.bootstrap-dialog .bootstrap-dialog-close-button .close{
+	font-size: 32px;
+	line-height: 0.7;
+}
+.modal-dialog .modal-footer {
+	padding: 10px 15px;
+
+}
+.modal-dialog hr {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.modal-dialog .alert {
+	margin: 5px;
+}
+
+
+/*custom*/
+.publicKeyUnsorted {
+	margin-bottom: 1rem;
+}
+.publicKeyUnsorted h4 {
+	color: #666;
+}
+
+.callout hr,
+.box hr {
+	margin-top: 10px;
+	margin-bottom: 10px;
 }

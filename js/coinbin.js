@@ -1,4 +1,4 @@
-var debug = false;
+var debug = true;
 var bip39 = new BIP39('en');
 /*
 
@@ -158,6 +158,199 @@ document.getElementById('multisigWalletNnumber').addEventListener('change', func
   
 });
 */
+/*
+@ Switch Address when client have logged in with 2 private keys
+*/
+document.querySelector('.switchAddress').addEventListener('click', function (e) {
+	console.log('triggering switchAddress');
+	switchPubKeys(profile_data);
+	return;
+});
+
+/*
+@ Login Handling for Importing Wallet
+*/
+document.querySelector('#loginExtraImportFile').addEventListener('click', function (e) {
+
+
+	//get inputs elements for importing wallet backup files
+	//console.log('e', e);
+	var privateKeyFileArea = e.target.previousElementSibling;
+	//check if second file drop-area is visible
+	if(privateKeyFileArea.classList.contains('hidden')){
+		event.target.innerHTML = '- Remove second import file';
+		privateKeyFileArea.classList.remove('hidden');
+	}else{
+		event.target.innerHTML = '+ Add second import file';
+		privateKeyFileArea.classList.add('hidden');
+		privateKeyFileArea.classList.remove('is-active');
+		privateKeyFileArea.classList.remove('is-active-imported');
+		privateKeyFileArea.classList.remove('has-error');
+
+		//remove second import file backup from client data
+		if(Object.keys(profile_data).indexOf('imported_wallet') !== -1)
+			if (Object.keys(profile_data.imported_wallet).indexOf('1') !== -1)
+				profile_data.imported_wallet[1] = [];
+
+    //reset file-drop-area (file-input and message)!
+    privateKeyFileArea.children[1].innerText = "or drag and drop the file here";
+    privateKeyFileArea.children[2].value = null;
+
+	}
+});
+
+document.querySelector('#openBtnImportWallet').addEventListener('click', function (e) {
+
+
+	//error handling  
+  var error = true;
+  var errorMessage = '';
+
+  try {
+	  profile_data.pubkey_sorted = false;
+	  profile_data.private_keys = [];
+	  profile_data.public_keys = [];
+
+		
+		//is first imported file decrypted?
+		//if(privkey1data.address === undefined && privkey1data.privkey_hex === undefined && privkey1data.privkey_wif === undefined && privkey1data.pubkey === undefined){
+		if(profile_data.imported_wallet[0].decrypted.privkey_wif === undefined) {
+			errorMessage += "Your Private Key 1 is not valid! <br>";
+			return;
+		}
+		var decodedPrivkey1 = profile_data.imported_wallet[0].decrypted, privkey1;
+
+		privkey1 = decodedPrivkey1.privkey_wif;	
+
+		//***Validate private keys!
+		//handle private key 1
+		profile_data.address = decodedPrivkey1.address;
+		profile_data.private_keys.push(decodedPrivkey1.privkey_wif);
+		profile_data.public_keys.push(decodedPrivkey1.pubkey);
+
+		profile_data.signatures = 1;
+	  profile_data.wallet_type = "regular";
+
+
+
+		//is second imported file decrypted?
+		//if(privkey1data.address === undefined && privkey1data.privkey_hex === undefined && privkey1data.privkey_wif === undefined && privkey1data.pubkey === undefined){
+		
+		if (!document.querySelector('.file-drop-area.importfile2').classList.contains('hidden')) {
+
+			if(profile_data.imported_wallet[1].decrypted.privkey_wif === undefined) {
+				errorMessage += "Your Private Key 2 is not valid! <br>";
+				return;
+			}
+			var decodedPrivkey2 = profile_data.imported_wallet[1].decrypted, privkey2;
+
+			privkey2 = decodedPrivkey2.privkey_wif;	
+
+			//There was an error combining the keys. Please make sure that you cn locate both private key files before proceeding with your account.
+
+			//***Validate private keys!
+			if(privkey1 != privkey2){
+
+				//console.log('decodedPrivkey2: ', decodedPrivkey2);
+				profile_data.private_keys.push(decodedPrivkey2.privkey_wif);
+				profile_data.public_keys.push(decodedPrivkey2.pubkey);
+
+				profile_data.pubkey_sorted = isArraySorted(profile_data.public_keys);
+				
+				profile_data.signatures = 2;
+				profile_data.wallet_type = "multisig";
+
+				//BitBay/Halo Client wallet only accepts addresses with sorted public keys, sort it!
+				if (profile_data.pubkey_sorted == false){
+					profile_data.private_keys.reverse();
+					profile_data.public_keys.reverse();
+					profile_data.pubkey_sorted = true;
+				}
+
+				//create multisig address
+				
+				var multisig =  coinjs.pubkeys2MultisigAddress(profile_data.public_keys, 2);	//create 2-of-2 multisig wallet
+				profile_data.address = multisig["address"];	//address, scriptHash, redeemScript
+				profile_data.redeem_script = multisig["redeemScript"];	//address, scriptHash, redeemScript
+
+				console.log('multisig: ', multisig);
+				//console.log('profile_data before sort: ', profile_data);
+				//if (!profile_data.pubkey_sorted)
+					//sortPubKeys(profile_data);
+			}else
+				errorMessage += "Imported files are the same! <br>";
+		}
+
+		//***Get input fields
+	  profile_data.remember_me = ($(this).parents('section').find('input.loginRemember').is(":checked") ? 1 : 0)
+	  loginRemember = profile_data.remember_me;
+
+
+		//***No Errors! Proceed Login - with private key generation!
+		if(!errorMessage){
+			$(".walletLoginStatus").html('').addClass("hidden").fadeIn().fadeOut();
+			profile_data.login_type = "import_wallet";
+			checkUserLogin(profile_data);
+			return ;
+		}
+	} catch(e) {
+  	errorMessage = "Something went wrong, did you really import the backup files?";
+  }
+	
+	//***Error message handling!
+	//$(e.offsetParent).prepend('<i class="bi bi-exclamation-triangle-fill"></i> ');
+	//$(e.offsetParent).html(errorMessage).removeClass("hidden").removeClass("hide").fadeOut().fadeIn();
+
+	$('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').html(errorMessage).prepend('<i class="bi bi-exclamation-triangle-fill"></i> ').removeClass("hidden").removeClass("hide").removeClass('alert-success').addClass('alert-danger').fadeOut().fadeIn();
+	return ;
+});
+
+function switchPubKeys(sessionData){
+	sessionData.private_keys.reverse();
+	sessionData.public_keys.reverse();
+	
+	var multisig =  coinjs.pubkeys2MultisigAddress(sessionData.public_keys, 2);	//create 2-of-2 multisig wallet
+	sessionData.address = multisig["address"];	//address, scriptHash, redeemScript
+	sessionData.redeem_script = multisig["redeemScript"];
+
+	console.log('your new address: ' + multisig["address"]);
+	console.log('pubkeys is now sorted: ', sessionData);
+
+	return checkUserLogin(sessionData);
+
+}
+/*
+ @ Sort public keys for new combined pubkey address
+ //this is needed to import a multisig address to BitBay/Halo Client Wallet
+*/
+function sortPubKeys(sessionData, sort='asc'){
+	
+	if (sessionData.pubkey_sorted == false && sort == 'asc') {	//sort
+		profile_data.private_keys.reverse();
+		profile_data.public_keys.reverse();
+	}
+	if (sessionData.pubkey_sorted == true && sort == 'desc') {
+		profile_data.private_keys.reverse();
+		profile_data.public_keys.reverse();
+	}
+
+/*
+	//switch orders of private and publickey
+	profile_data.private_keys[0] = sessionData.private_keys[1];
+	profile_data.private_keys[1] = sessionData.private_keys[0];
+
+	profile_data.public_keys[0] = sessionData.public_keys[1];
+	profile_data.public_keys[1] = sessionData.public_keys[0];
+*/
+	//now generate the new address with its redeemscript
+	var multisig =  coinjs.pubkeys2MultisigAddress(profile_data.public_keys, 2);	//create 2-of-2 multisig wallet
+	profile_data.address = multisig["address"];	//address, scriptHash, redeemScript
+	profile_data.redeem_script = multisig["redeemScript"];
+
+	console.log('your new address: ' + multisig["address"]);
+	console.log('pubkeys is now sorted: ', profile_data);
+	return;
+}
 
 /*
 @ Login Handling for Private Keys
@@ -165,7 +358,7 @@ document.getElementById('multisigWalletNnumber').addEventListener('change', func
 
 document.querySelector('#loginExtraPrivateKey').addEventListener('click', function (event) {
 	
-	//get inputs elements for privatekeys
+	//get inputs elements for private keys
 	var privateKeyInputs = [];
 	$('section.login-box[data-wallet-login-multistep-wizard=private_key] input[name=openPrivateKey]').each(function(i, e) {
 	  privateKeyInputs.push(e);
@@ -183,8 +376,6 @@ document.querySelector('#loginExtraPrivateKey').addEventListener('click', functi
 		privateKeyInputs[1].parentElement.classList.add('hidden');
 		privateKeyInputs[1].value = '';
 	}
-	
-
 });
 document.querySelector('#openBtnPrivateKey').addEventListener('click', function () {
 	
@@ -257,14 +448,13 @@ document.querySelector('#openBtnPrivateKey').addEventListener('click', function 
 	//***No Errors! Proceed Login - with private key generation!
 	if(!errorMessage){
 		$(".walletLoginStatus").html('').addClass("hidden").fadeIn().fadeOut();
-		profile_data.login_type = "private_key";
+		profile_data.login_type = "private_keys";
 		checkUserLogin(profile_data);
 		return ;
 	}
 
 	//***Error message handling!
-	$('section.login-box[data-wallet-login-multistep-wizard=private_key] .walletLoginStatus').prepend('<i class="bi bi-exclamation-triangle-fill"></i> ');
-	$('section.login-box[data-wallet-login-multistep-wizard=private_key] .walletLoginStatus').html(errorMessage).removeClass("hidden").removeClass("hide").fadeOut().fadeIn();
+	$('section.login-box[data-wallet-login-multistep-wizard=private_key] .walletLoginStatus').html(errorMessage).prepend('<i class="bi bi-exclamation-triangle-fill"></i> ').removeClass("hidden").removeClass("hide").fadeOut().fadeIn();
 	return ;
 
 
@@ -370,7 +560,7 @@ document.querySelector('.loginButton').addEventListener('click', function () {
 		/*profile_data = { 
 			"address" : "",
 			"email" : loginEmail,
-			"login_type" : "", //"password" (email & password login), "private_key" login, "mnemonic" login, "hdmaster" login
+			"login_type" : "", //"password" (email & password login), "private_key" login, "import_wallet", mnemonic" login, "hdmaster" login
 			"wallet_type" : walletType,	//regular (login normal address), multisig
 			"redeem_script" : "",
 			"remember_me" : loginRemember,
@@ -394,6 +584,10 @@ document.querySelector('.loginButton').addEventListener('click', function () {
 				{"xpub" : ""},
 				{"xprv" : ""},
 				{"seed" : ""}
+			],
+			"imported_wallet" : [
+			{"file1": ""},
+			{"file2": ""},
 			]
 		};
 		*/
@@ -404,8 +598,7 @@ document.querySelector('.loginButton').addEventListener('click', function () {
 	}
 
 	//***Error message handling!
-	$(".walletLoginStatus").prepend('<i class="bi bi-exclamation-triangle-fill"></i> ');
-	$(".walletLoginStatus").html(errorMessage).removeClass("hidden").removeClass("hide").fadeOut().fadeIn();
+	$(".walletLoginStatus").html(errorMessage).prepend('<i class="bi bi-exclamation-triangle-fill"></i> ').removeClass("hidden").removeClass("hide").fadeOut().fadeIn();
 	return ;
 
 });
@@ -487,7 +680,11 @@ profile_data = {
 
 
 	$(".walletLogout").click(function(e){
+		
+		//reset login options
 		$(".nav #wallet_options").click();
+		
+		//reset input fields and related messages
 		$("#openEmail").val("");
 		$("#openEmail-confirm").val("");
 		$("#openPass").val("");
@@ -495,6 +692,16 @@ profile_data = {
 		$("#openPass2").val("");
 		$("#openPass2-confirm").val("");
 		
+
+		$("input[name=openPass").val("");
+		$("input[name=openPass-confirm").val("");
+		$("input[name=openPrivateKey").val("");
+		$("input[type=file").val("");
+		$("section .file-drop-area").removeClass("is-active").removeClass("is-active-imported");
+		$("section .file-drop-area .file-msg").text("or drag and drop the file here");
+
+
+
 		//Menu Account Info
 		$(".walletAddress").text("");
     $(".walletAddress").attr("data-original-title", "");
@@ -524,6 +731,11 @@ profile_data = {
 		$("#walletKeys .privkey2").val("");
 		$(".walletPubKeys .pubkey2").val("");
 		$("#walletKeys .privkeyaes2").val("");
+		
+		$('.btn-flatbay').prop('disabled', true).addClass("btn-flatbay-inactive");
+		$('#disclaimer .btn-flatbay').prop('disabled', false);
+
+		$('.publicKeySortNotification').addClass('hidden');
 		
 		/*
 		$('.walletPubKeys .redeemScript_wallet').parent().addClass('hidden');
@@ -846,6 +1058,7 @@ profile_data = {
 					// then sign, regular wallet
 					var signed = await txunspent.sign($("#walletKeys .privkey").val());
 					
+					console.log('signed with privkey1: '+ $("#walletKeys .privkey").val());
 				
 	
 					// then sign again, if multisig wallet
@@ -860,6 +1073,7 @@ profile_data = {
 					if ($("#walletKeys .privkey2").val() != "") {
 						txunspent = tx2.deserialize(signed); 
 						signed = await txunspent.sign($("#walletKeys .privkey2").val());
+						console.log('signed with privkey1: '+ $("#walletKeys .privkey2").val());
 					}
 					
 					
@@ -918,7 +1132,6 @@ profile_data = {
 
 								$("#walletConfirmSend").html("Send");
 								$("#walletConfirmSend").addClass("hidden");
-								$("#modalWalletConfirm .modal-body p").css('display','none');
 							} else {
 								//$("#walletSendConfirmStatus").removeClass("hidden").addClass('alert-danger').html(unescape(callback_result).replace(/\+/g,' '));
 								$("#walletSendConfirmStatus").removeClass("hidden").removeClass('alert-success').addClass('alert-danger').html(unescape(callback_result)).append("<br>You should perhaps try to raise the Transaction Fee?");
@@ -3539,31 +3752,7 @@ observer.observe(target, config);
 		}
 	}
 
-	function getDecodedPrivKey(privkey){
-		var wif = privkey;
-		if(privkey.length==64){
-			wif = coinjs.privkey2wif(wif);
-		}
-		if(wif.length==51 || wif.length==52){
-			try {
-				var w2address = coinjs.wif2address(wif);
-				var w2pubkey = coinjs.wif2pubkey(wif);
-				var w2privkey = coinjs.wif2privkey(wif);
-
-	 			return { 
-					"address" : w2address.address,
-					"pubkey" : w2pubkey.pubkey,
-					"privkey_hex" : w2privkey.privkey,
-					"privkey_wif" : wif
-				}
-
-			} catch (e) {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
+	
 
 	function decodePubKey(){
 		var pubkey = $("#verifyScript").val();
@@ -3827,7 +4016,8 @@ observer.observe(target, config);
 		$('a[href="' + location.hash + '"]').tab('show');
 	}
 
-	$(".showKey").click(function(){
+	$(document).on('click', '.showKey', function(){
+	//$(".showKey").click(function(){
 		if ($(this).data("hidden") === false) {
 			$("input[type='text']",$(this).parent().parent()).attr('type','password');
 			$(this).data("hidden", true);
@@ -4118,7 +4308,7 @@ observer.observe(target, config);
 		var privkeyaes, privkeyaes2;
 
 		//***Handle login with importing backup wallet
-		if (sessionData.login_type == 'import_backup') {
+		if (sessionData.login_type == 'import_wallet') {
 			console.log('Login with Importing wallet backup');
 		}
 
@@ -4214,11 +4404,23 @@ observer.observe(target, config);
 			$("#walletKeys .privkeyaes2").val(privkeyaes2).removeClass("hidden");
 			$(".walletPubKeys .redeemScript_wallet").removeClass("hidden");
 
-			//check if public keys is sorted
-			//if not throw out a message about that to the client
 			profile_data.pubkey_sorted = isArraySorted(profile_data.public_keys);
-			if (!profile_data.pubkey_sorted)
-				PNotify_helper('BitBay Client Wallet support', 'Your public keys needs to be sorted if you want to import it to the BitBay client wallet!', 'warning');
+
+			
+			//publickey sort notification
+			//if(profile_data.login_type != "import_wallet"){
+				//$('.publicKeySortNotification').removeClass('hidden')
+
+				if(profile_data.pubkey_sorted){
+					$('.publicKeyIsSorted').removeClass('hidden');
+					$('.publicKeyIsUnSorted').addClass('hidden');
+				}else{
+					$('.publicKeyIsSorted').addClass('hidden');
+					$('.publicKeyIsUnSorted').removeClass('hidden');
+				}
+			//}
+
+			
 		}
 
 		$(".amountCoinSymbol").text(coinjs.symbol);
@@ -4271,8 +4473,40 @@ observer.observe(target, config);
 	//Set correct Wallet type
 	//$("#openWalletType").change();
 
+
+
+});
+
+function getDecodedPrivKey(privkey){
+		var wif = privkey;
+		if(privkey.length==64){
+			wif = coinjs.privkey2wif(wif);
+		}
+		if(wif.length==51 || wif.length==52){
+			try {
+				var w2address = coinjs.wif2address(wif);
+				var w2pubkey = coinjs.wif2pubkey(wif);
+				var w2privkey = coinjs.wif2privkey(wif);
+
+	 			return { 
+					"address" : w2address.address,
+					"pubkey" : w2pubkey.pubkey,
+					"privkey_hex" : w2privkey.privkey,
+					"privkey_wif" : wif
+				}
+
+			} catch (e) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+
+//***Functions for supporting AES encrypt/decrypt in python for BitBay/Halo
 	/*
-	@ check the array is sorted
+	@ check if array is sorted
 	*/
 
 	function isArraySorted(boxNumbers) {
@@ -4283,5 +4517,166 @@ observer.observe(target, config);
 	  }
 	  return true;
 	}
+	function isArraysEqual (arr1, arr2) {
 
-});
+	  // Check if the arrays are the same length
+	  if (arr1.length !== arr2.length) return false;
+
+	  // Check if all items exist and are in the same order
+	  for (var i = 0; i < arr1.length; i++) {
+	    if (arr1[i] !== arr2[i]) return false;
+	  }
+
+	  // Otherwise, return true
+	  return true;
+	}
+
+	function base64ToHex(str) {
+	  const raw = atob(str);
+	  let result = '';
+	  for (let i = 0; i < raw.length; i++) {
+	    const hex = raw.charCodeAt(i).toString(16);
+	    result += (hex.length === 2 ? hex : '0' + hex);
+	  }
+	  return result.toUpperCase();
+	}
+
+	function hexToBase64(hexStr) {
+	 let base64 = "";
+	 for(let i = 0; i < hexStr.length; i++) {
+	   base64 += !(i - 1 & 1) ? String.fromCharCode(parseInt(hexStr.substring(i - 1, i + 1), 16)) : ""
+	 }
+	 return btoa(base64);
+	}
+
+	//modulo operator
+	//x.mod(y), works with negative numbers as well
+	//https://stackoverflow.com/questions/4467539/javascript-modulo-gives-a-negative-result-for-negative-numbers
+	//console.log( (-33).mod(32) )
+	Number.prototype.mod = function (n) {
+	  return ((this % n) + n) % n;
+	};
+
+	//function to behave like rstrip in python
+	function rStrip(x, characters) {
+	  var start = 0;
+	  var end = x.length - 1;
+	  while (characters.indexOf(x[end]) >= 0) {
+	    end -= 1;
+	  }
+	  return x.substr(0, end + 1);
+	}
+
+
+
+	function addPadding(dataText, dataHex, interrupt, pad, block_size=32) {
+	  var new_data, new_data_len, pad_string, remaining_len, to_pad_len;
+	  new_data = dataText + interrupt;
+	//console.log('dataHex: ' + dataHex);
+	//console.log('new_data: ' + new_data);
+	  new_data_len = new_data.length-1;
+	//console.log('new_data_len: ' + new_data_len);
+	  remaining_len = block_size - new_data_len;
+	//console.log('remaining_len: ' + remaining_len);
+	  to_pad_len = remaining_len.mod(block_size);
+		if (to_pad_len == 0)
+	    to_pad_len = 15
+		//console.log('to_pad_len: ' + to_pad_len);
+	        //pad_string = pad * to_pad_len
+		var pad_string = "";
+	  for(i=1; i<= to_pad_len;i++) { pad_string += pad}
+		//console.log('pad_string: ' + pad_string);
+		//console.log('new_data+ pad_string: ' + new_data+ pad_string);
+		//console.log('dataHex+ pad_string: ' + dataHex+ pad_string);
+	  return dataHex+interrupt+ pad_string;         //we only need to add padding to the hex encoded "dataText" and not the string itself!
+	}
+
+
+	function stripPadding(data, interrupt, pad){
+		data = rStrip(data, pad);
+		data = rStrip(data, interrupt);
+		return data;
+	}
+
+	//***Encrypt Text with secret key!
+	function encryptText(text, secretKey) {
+	  // The initialization vector (must be 16 bytes)
+	  var iv = aesjs.utils.utf8.toBytes('12345678abcdefgh');
+
+	  //secret must be hashed properly and then converted to bytes
+	  var keySHA = Crypto.SHA256(secretKey);
+	  var keySHABytes = aesjs.utils.hex.toBytes(keySHA);
+
+	  //someone decided to add "KEY: " infront of the text to encrypt!
+	  //so just do it!
+	  text = "KEY: "+ text;
+
+	  //convert text to bytes!
+	  var textBytes = aesjs.utils.utf8.toBytes(text);
+	  var textHex = aesjs.utils.hex.fromBytes(textBytes);
+
+	  //text MUST be in 16 bytes or multiple of 16 bytes, so add padding properly according it
+	  var textPaddedHex = addPadding(text, textHex, '01', '00');;
+	  var textBytesPadded = aesjs.utils.hex.toBytes(textPaddedHex);
+
+	  //encrypt with key and IV
+	  var aesCbc = new aesjs.ModeOfOperation.cbc(keySHABytes, iv);
+	  var encryptedBytes = aesCbc.encrypt(textBytesPadded);
+
+	  console.log('textBytes hex: '+ aesjs.utils.hex.fromBytes(textBytes));
+	  console.log('textBytesPadded hex: '+ aesjs.utils.hex.fromBytes(textBytesPadded));
+
+	  console.log('encryptedBytes: ', encryptedBytes);
+
+	  // To print or store the binary data, you may convert it to hex
+	  var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+	  var encryptedB64 = hexToBase64(encryptedHex);
+
+	  console.log('encryptedHex: ' + (encryptedHex));
+	  console.log('encryptedB64: ' + (encryptedB64));
+
+	  //return the encrypted text in base64
+	  return encryptedB64;
+	}
+
+	function decryptText(text, secretKey) {
+	  // The initialization vector (must be 16 bytes)
+	  var iv = aesjs.utils.utf8.toBytes('12345678abcdefgh');
+
+	  //secret must be hashed properly and then converted to bytes
+	  var keySHA = Crypto.SHA256(secretKey);
+	  var keySHABytes = aesjs.utils.hex.toBytes(keySHA);
+
+	  //remove "PASSWORDPROTECTED:" string from the encrypted text!
+	  //trim it if needed
+	  text = text.replace('PASSWORDPROTECTED:', '').trim();
+
+	  //convert base64 back to hex format
+	  var encryptedWalletHex = base64ToHex(text);
+
+	  encryptedHex =  encryptedWalletHex;
+	  console.log('encryptedWalletHex: '+ encryptedWalletHex);
+
+	  // When ready to decrypt the hex string, convert it back to bytes
+	  var encryptedBytes = aesjs.utils.hex.toBytes(encryptedWalletHex);     //works
+
+	  // The cipher-block chaining mode of operation maintains internal
+	  // state, so to decrypt a new instance must be instantiated.
+	  var aesCbc = new aesjs.ModeOfOperation.cbc(keySHABytes, iv);
+	  var decryptedBytes = aesCbc.decrypt(encryptedBytes);
+
+	  // Convert our bytes back into text
+	  var decryptedHex = aesjs.utils.hex.fromBytes(decryptedBytes);
+	  console.log('decryptedHex: ' + decryptedHex);
+
+	  var decryptedHexUnPadded = stripPadding(decryptedHex, '01', '0' );
+
+	  console.log('decryptedHexUnPadded: ' + decryptedHexUnPadded);
+	  var decryptedHexUnPaddedBytes = aesjs.utils.hex.toBytes(decryptedHexUnPadded);
+	  var decryptedText = aesjs.utils.utf8.fromBytes(decryptedHexUnPaddedBytes);
+	  console.log('decryptedText: ' + decryptedText);
+
+	  //strip out "KEY: " from the decrypted text
+	  //trim the remaining string
+	  return decryptedText.replace('KEY: ', '').trim();
+	}

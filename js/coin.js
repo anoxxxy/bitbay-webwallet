@@ -1,5 +1,6 @@
 //***Global variables!
 	var profile_data = {};
+	//profile_data.encryptedText = "hejsan sade katten";
 
 /*
  Coinjs 0.01 beta by OutCast3k{at}gmail.com
@@ -30,7 +31,7 @@
 	coinjs.decimalPlaces = 8;
 	coinjs.symbol = 'BAY';
 	coinjs.symbolReserve = 'BAYR';
-	coinjs.debug = true;
+	coinjs.debug = false;
 	coinjs.block_processor = 'bp';
 	coinjs.burn_fee = 0.00005590;	//satoshi's
 	coinjs.mTransactionoNList = {};	//used for keeping manualTransactions data
@@ -369,7 +370,6 @@ https://api.latoken.com/v2/ticker
 
 		if (coinjs.compressed) {
 			r.push(0x01);
-			console.log('compress: ');
 		}
 			/*
 		}
@@ -380,14 +380,9 @@ https://api.latoken.com/v2/ticker
 		*/
 
 		r.unshift(coinjs.priv);
-		console.log('r: ', r);
 		
 		var hash = Crypto.SHA256(Crypto.SHA256(r, {asBytes: true}), {asBytes: true});
 		var checksum = hash.slice(0, 4);
-
-		console.log('hash: ', hash);
-		console.log('checksum Crypto.util.bytesToHex: ', Crypto.util.bytesToHex(checksum));
-		
 
 		return coinjs.base58encode(r.concat(checksum));
 	}
@@ -1295,6 +1290,7 @@ https://api.latoken.com/v2/ticker
 							inputScript = scriptPubKey_buffer;
 						} else if (decode.version == coinjs.multisig){ // mulisig address
 							inputScript = profile_data.redeem_script;
+							console.log('addUnspent inputScript: ', inputScript);
 						}
 						
 						if (coinjs.debug) {

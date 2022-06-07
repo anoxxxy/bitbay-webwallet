@@ -45,6 +45,7 @@
 
   <link rel="stylesheet" href="assets/css/icons/bootstrap-icons_v1.83.css">
   <link rel="stylesheet" href="assets/css/bootstrap-datetimepicker.min.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-dialog.css">
   <link rel="stylesheet" href="assets/css/pnotify.custom.min.css" media="all">
   <link rel="stylesheet" href="assets/css/style.css?v=1.13" media="screen">
 
@@ -58,7 +59,7 @@
 
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
-
+  <script type="text/javascript" src="assets/js/bootstrap-dialog.js"></script>
   
   
   <script type="text/javascript" src="js/aes-js.js"></script>
@@ -109,6 +110,7 @@
 											<p class="walletBalance"></p>
 										</a>
                 </li>
+                <li class="logouthide"><a href="#advanced" data-toggle="modal">Advanced</a></li>
                 <li class="divider-text"></li>
                 <li><a href="#network" data-toggle="tab">Network</a></li>
                 <li class="divider-text"></li>
@@ -441,31 +443,36 @@
 
       <div class="callout callout-no-border m-1">
         <div class="form-group input-group">
+          <span class="input-group-btn">
+            <button class="input-group-btn-icon btn btn-default" type="button"><i class="bi bi-key-fill"></i></button>
+          </span>
           <input name="openPrivateKey" type="password" class="form-control" placeholder="Private Key 1" required>
           <span class="input-group-btn">
-              <button class="showKey btn btn-default" type="button">Show</button>
-            </span>
+            <button class="showKey btn btn-default" type="button">Show</button>
+          </span>
         </div>
         <div class="form-group input-group hidden">
+          <span class="input-group-btn">
+            <button class="input-group-btn-icon btn btn-default" type="button"><i class="bi bi-key-fill"></i></button>
+          </span>
           <input name="openPrivateKey" type="password" class="form-control" placeholder="Private Key 2">
           <span class="input-group-btn">
-              <button class="showKey btn btn-default" type="button">Show</button>
-            </span>
+            <button class="showKey btn btn-default" type="button">Show</button>
+          </span>
         </div>
 
-          <button id="loginExtraPrivateKey" type="button" class="btn btn-default btn-block">+ Add second private key</button>
+          <button id="loginExtraPrivateKey" type="button" class="btn btn-default btn-block">+ Add second private key <i class="bi bi-key-fill"></i> </button>
 
       </div>
 
         <div class="callout callout-no-border m-1" >
-
           <div class="form-group">
             <div class="alert alert-danger hidden walletLoginStatus"><i class="bi bi-exclamation-triangle-fill"></i></div>
           </div>
 
           
           <div class="form-group form-accept checkbox">
-            <p class="alert alert-danger">No email/password is stored on our server. If you forget your email or password it CANNOT be recovered! You can print/backup your wallet after you login.</p>
+            <p class="alert alert-danger">No data is stored on our server. If you forget your private key it CANNOT be recovered! You can print/backup your wallet after you login.</p>
             
             <label>
               <input class="acceptTerms" type="checkbox"> I have read the <a href="#disclaimer" role="button" class="btn-flat" data-toggle="modal">disclaimer</a> and have stored my login information
@@ -491,7 +498,59 @@
         </div>
     </section>
     <section class="callout callout-no-border m-1 login-box hide" data-wallet-login-multistep-wizard="import_wallet">
-      <p>Sorry but I am Under Construction. <br><br>/Regards Alice and Bob!</p>
+      
+      <!-- Drag & Drop Backup File -->
+      <div class="callout callout-no-border m-1">
+        <div class="form-group file-drop-area importfile1">
+          <span class="fake-btn">Import File (Private Key 1) <i class="bi bi-key-fill"></i></span>
+          <span class="file-msg">or drag and drop the file here</span>
+          <input class="file-input" type="file">
+        </div>
+
+        <div class="form-group  file-drop-area hidden importfile2">
+          <span class="fake-btn">Import File (Private Key 2) <i class="bi bi-key-fill"></i></span>
+          <span class="file-msg">or drag and drop the file here</span>
+          <input class="file-input" type="file">
+        </div>
+
+        <button id="loginExtraImportFile" type="button" class="btn btn-default btn-block">+ Add second import file <i class="bi bi-key-fill"></i> </button>
+
+      </div>
+
+      <div class="callout callout-no-border m-1" >
+
+        <div class="form-group">
+          <div class="alert alert-danger hidden walletLoginStatus"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        </div>
+
+        
+        <div class="form-group form-accept checkbox">
+          <p class="alert alert-danger">No Data is stored in our server!</p>
+
+          <label>
+            <input class="acceptTerms" type="checkbox"> I have read the <a href="#disclaimer" role="button" class="btn-flat" data-toggle="modal">disclaimer</a> and have stored my login information
+          </label>
+
+        </div>
+
+        <div class="form-group" >
+          <span class="button-checkbox checkbox">
+            <label >
+            <input class="loginRemember" type="checkbox">Stay Logged in (until browser tab closes)</label>
+            <button type="button" class="btn-flat hidden" data-color="info">Remember Me</button>
+            <select class="form-control hide rememberMe" name="rememberMe">
+              <option value="false" selected="selected">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </span>
+        </div>
+        
+        <div class="form-group form-submit">
+          <input id="openBtnImportWallet" type="submit" class="btn-flatbay btn-flatbay-inactive" value="Load/Create Wallet">
+        </div>
+
+      </div>
+
     </section>
     <section class="callout callout-no-border m-1 login-box hide" data-wallet-login-multistep-wizard="advanced">
       <p>Sorry but I am Under Construction. <br><br>/Regards Alice and Bob!</p>
@@ -526,56 +585,51 @@
           <!-- Old Login !-->
           <div class="row">
             <div class="col-md-12">
-              <!-- <h2>Bitbay offline Wallet <small> browser based offline wallet</small></h2> !-->
-
-              <!-- User Wallet Login Form !-->
-              <div class="row">
-                
-              </div>
-
-              <!-- Modal HTML -->
-              <div id="disclaimer" class="modal fade">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header danger-area">
-                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                      <h2><i class="bi bi-exclamation-circle-fill"></i> Warning - Disclaimer</h2>
-                    </div>
-                    <div class="modal-body">
-                      <div class="form-group form-notice">
-                        <h3>Understand the Risks in Using the BitBay Web Wallet</h3>
-                        <p>
-                          Cryptocurrencies provide people with the power to control and own their money. Cryptocurrency wallets are not a bank. Moving away from the use of the typical banking system requires new responsibilities upon cryptocurrency users. We highly recommend using the Markets wallet vs this web wallet for the sake of added security. This BitBay web wallet is a free, open-source, client-side interface. It allows you to transact and store BitBay without the need to run a full BitBay node. The web wallet has 2 formats to access it, either through a stand alone offline wallet or through a legitimate website host for the sake of hosting multisignature services. <strong>What makes it so secure</strong> is that <strong>legitimate website hosts</strong> do not in any way store any private data on their server for accessing the wallet - the wallet is completely independent of the website. This wallet grants the ability for websites to provide simplified payment services without any security risk on their part for hosting it. In other words, if the website is ever hacked, your wallet will still be safe! However, <strong>what makes it insecure</strong> is when entering your login credentials on a fraudulent website it will result in you losing your coins. Scammers tend to use fear tactics to startle your common sense. Any emails received pertaining to the security of your web wallet will <strong>ALWAYS be malicious in nature</strong> and responding to these emails could lead to the <strong>LOSS OF YOUR COINS!</strong>
-                        </p>
-                        <h3>Notice of your Private Login Key</h3>
-                        <p>
-                          When creating new accounts, emails are requested because they provide a failsafe against duplicating passwords, since no two email addresses are the same. However, understand that IN NO WAY DOES THIS PROVIDE YOU WITH A FAILSAFE FOR PASSWORD RECOVERY. We highly recommend creating a new email account just for the sake of creating your web wallet - and do not use the account for sending and receiving emails. Different email &nbsp; password combinations are what create distinctive individual wallets. Be careful when entering your details as LOST LOGIN CREDENTIALS CAN NOT BE RECOVERED! We do not store any data about our users, not even email addresses. We do not confirm if an email is valid. It is only used to create your private key.
-                        </p>
-                      </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn-flatbay" data-dismiss="modal">I understand the risks</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               <!-- User Wallet !-->
               <div id="openWallet" class="hidden">
+                <!--
+                <div class="row publicKeySortNotification hidden">
+                    <div class="col-md-12">
+                      <div class="row">
+                          <div class="callout callout-danger no-margin">
+                              <h4>Important notification!</h4>
+                              Your 2 private keys can generate 2 multisig addresses. <br>
+                              BitBay Client wallet is using sorted public keys for addresses. If you want to import your wallet to BitBay Client wallet then they need to be sorted.
+                              <hr>
+                              <div class="publicKeyIsSorted hidden">
+                                <div class="alert  alert-success">
+                                  You can import this address to BitBay Client wallet!
+                                </div>
+                              </div>
+                              <div class="publicKeyIsUnSorted hidden">
+                                <div class="alert  alert-warning">
+                                  This address has unsorted public keys and can not be used with BitBay Client wallet, however it is still valid.
+                                </div>
+
+                                
+                              </div>
+
+                              
+                              <hr>
+                              Notice that you can always switch your public keys order and have access to both addresses.<br>
+                              <button class="btn btn-default switchAddress">Switch address</button>
+                              <button class="btn btn-default toggleTheme">Toggle Theme</button>
+
+                          </div>
+                      </div>
+                    </div>
+                </div>
+              -->
+
                 <div class="row">
 
                   <!-- Wallet Panel -->
-                  <div class="row">
-                    <!--
-											<div id="warning" class="col-md-12">
-												<div class="col-md-12">
-													<strong>IMPORTANT NOTICE: </strong> The BitBay Web Wallet is currently in development mode while we update it to work with the Dynamic Peg protocol.  Your funds are safe, but we advise you to use the software to participate in the network. If you want to access funds in the Web wallet please read the <strong><a href="https://bitbay.market/forum-archive/t/how-to-import-your-bitbay-web-wallet-private-key-into-the-bitbay-qt-wallet/2227.html">support article</a></strong>
-												</div>
-											</div>
--->
-
                   
-                    
+                  <div class="row">
+
+
+
                     
                     <!-- Wallet User Panel -->
                     
@@ -595,26 +649,6 @@
                             </li>
                             <li class="">
                               <a data-toggle="tab" href="#walletBackup">Wallet Backup</a>
-                            </li>
-                            <li class="dropdown hidden">
-                              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Bitbay <span class="caret"></span></a>
-                              <ul class="dropdown-menu">
-                                <li>
-                                  <a href="http://bitbay.market" target="_blank">Bitbay Website</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                  <a href="http://explorer.bitbay.market" target="_blank">Bitbay Blockexplorer</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                  <a href="https://bitcointalk.org/index.php?topic=890531.0" target="_blank">Bitbay - Bitcointalk</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                  <a href="https://twitter.com/bitbayofficial" target="_blank">Bitbay - Twitter</a>
-                                </li>
-                              </ul>
                             </li>
                           </ul>
 
@@ -1476,7 +1510,7 @@
           <hr>
           <div id="verifyStatus" class="alert alert-danger hidden"><span class="glyphicon glyphicon-exclamation-sign"></span> Unable to decode</div>
 
-          <input type="button" value="Submit" class="btn-flatbay " id="verifyBtn">
+          <input type="button" value="Submit" class="btn-flatbay" id="verifyBtn">
           <br>
 
           <div class="hidden verifyData" id="verifyRsData">
@@ -2284,7 +2318,7 @@
 
 
   <!-- wallet confirm send modal -->
-  <div class="modal fade" id="modalWalletConfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal fade" id="modalWalletConfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -2453,6 +2487,101 @@
   </div>
   <!-- warning (fee) modal -->
 
+  <!-- Disclaimer modal -->
+  <div id="disclaimer" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header danger-area">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          
+          <h3 class="modal-title"><i class="bi bi-exclamation-circle-fill"></i> Warning - Disclaimer</h3>
+        </div>
+        <div class="modal-body">
+          <div class="form-group form-notice">
+            <h3>Understand the Risks in Using the BitBay Web Wallet</h3>
+            <p>
+              Cryptocurrencies provide people with the power to control and own their money. Cryptocurrency wallets are not a bank. Moving away from the use of the typical banking system requires new responsibilities upon cryptocurrency users. We highly recommend using the Markets wallet vs this web wallet for the sake of added security. This BitBay web wallet is a free, open-source, client-side interface. It allows you to transact and store BitBay without the need to run a full BitBay node. The web wallet has 2 formats to access it, either through a stand alone offline wallet or through a legitimate website host for the sake of hosting multisignature services. <strong>What makes it so secure</strong> is that <strong>legitimate website hosts</strong> do not in any way store any private data on their server for accessing the wallet - the wallet is completely independent of the website. This wallet grants the ability for websites to provide simplified payment services without any security risk on their part for hosting it. In other words, if the website is ever hacked, your wallet will still be safe! However, <strong>what makes it insecure</strong> is when entering your login credentials on a fraudulent website it will result in you losing your coins. Scammers tend to use fear tactics to startle your common sense. Any emails received pertaining to the security of your web wallet will <strong>ALWAYS be malicious in nature</strong> and responding to these emails could lead to the <strong>LOSS OF YOUR COINS!</strong>
+            </p>
+            <h3>Notice of your Private Login Key</h3>
+            <p>
+              When creating new accounts, emails are requested because they provide a failsafe against duplicating passwords, since no two email addresses are the same. However, understand that IN NO WAY DOES THIS PROVIDE YOU WITH A FAILSAFE FOR PASSWORD RECOVERY. We highly recommend creating a new email account just for the sake of creating your web wallet - and do not use the account for sending and receiving emails. Different email &nbsp; password combinations are what create distinctive individual wallets. Be careful when entering your details as LOST LOGIN CREDENTIALS CAN NOT BE RECOVERED! We do not store any data about our users, not even email addresses. We do not confirm if an email is valid. It is only used to create your private key.
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-flatbay" data-dismiss="modal">I understand the risks</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Disclaimer modal -->
+
+  <!-- Advanced modal -->
+  <div id="advanced" class="modal fade" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header danger-area">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          
+          <h3 class="modal-title"><i class="bi bi-exclamation-circle-fill"></i> Advanced</h3>
+        </div>
+        <div class="modal-body">
+          <div class="callout callout-danger no-margin">
+              <h4>Important notification!</h4>
+              Your 2 private keys can generate 2 multisig addresses. <br>
+              BitBay Client wallet is using sorted public keys for addresses. If you want to import your wallet to BitBay Client wallet then they need to be sorted.
+              <hr>
+              <div class="publicKeyIsSorted hidden">
+                <div class="alert  alert-success">
+                  You can import this address to BitBay Client wallet!
+                </div>
+              </div>
+              <div class="publicKeyIsUnSorted hidden">
+                <div class="alert  alert-warning">
+                  This address has unsorted public keys and can not be used with BitBay Client wallet, however it is still valid.
+                </div>
+
+                
+              </div>
+
+              
+              <hr>
+              Notice that you can always switch your public keys order and have access to both addresses.<br>
+              <button class="btn btn-default switchAddress">Switch address</button>
+              <button class="btn btn-default toggleTheme">Toggle Theme</button>
+
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Advanced modal -->
+
+
+  <!-- decrypt encrypted text (private key)  modal body -->
+  <div class="decryptPrivateKey hidden">
+    <div class="callout callout-no-border m-1 ">
+      <label class="form-control" >Secret Key:</label>
+      <div class="form-group input-group">
+        <input name="secretKey" type="password" class="form-control secretKey" placeholder="Private Key" required>
+        <span class="input-group-btn">
+          <button class="showKey btn btn-default" type="button">Show</button>
+        </span>
+      </div>
+      <div class="walletDecryptStatus hidden">
+        <hr class="">
+        <div class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- decrypt secretkey modal -->
+
+
+
 
   <div class="hidden" id="entropybucket"></div>
 
@@ -2472,7 +2601,7 @@
     ga('send', 'pageview');
   </script>
 
-  <script type="text/javascript" src="assets/js/custom.js?v=1.13"></script>
+  <script type="text/javascript" src="assets/js/custom.js?v=1.14"></script>
   <script type="text/javascript" src="assets/js/pnotify.custom.min.js"></script>
 </body>
 

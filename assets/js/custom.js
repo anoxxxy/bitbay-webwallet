@@ -2,8 +2,8 @@
  * custom.js
  * 
  *
- * Custom JS Settings for Bitbay Offline Wallet
- * Created by anoxydoxy@gmail.com for Bitbay (BAY)
+ * Custom JS Settings for Bitbay Web Wallet (https://bitbay.market)
+ * Created by anoxydoxy@gmail.com for BitBay (BAY)
  */
 
  $.fn.removeClassPrefix = function(prefix) {
@@ -90,7 +90,7 @@ $(document).ready(function() {
   
   
   //***Disable enable login/create button
-	$('.loginButton').prop('disabled', true);
+	$('.loginhide .btn-flatbay').prop('disabled', true);
 	$('.acceptTerms').on("change",function(event) {
 	 	
     parentElement = event.target.offsetParent.offsetParent;
@@ -150,7 +150,7 @@ $(document).ready(function() {
   //i.e. label input label input label input input label input etc
   $('#print').on('click', function (e) {
     //console.log(profile_data);
-    if(profile_data == null || profile_data === undefined || Object.keys(profile_data).length === 0) {
+    if(profile_data === undefined || Object.keys(profile_data).length === 0) {
       profile_data = HTML5.sessionStorage('profile_data').get();
       console.log('profile_data IS NOT set - get from HTML5');
     }else{
@@ -168,6 +168,7 @@ $(document).ready(function() {
 
       print.push("<h3>Password</h2>");
       print.push("<div>" + safe_tags(profile_data.passwords[0]) + "</div>");
+
 
       if(profile_data.passwords[1] !== undefined && profile_data.passwords[1] != ""){
         print.push("<h3>Password2</h2>");
@@ -323,16 +324,6 @@ $(document).ready(function() {
 		$('ul.dropdown-menu [data-toggle=tab]').not($el).closest("li").removeClass("active");
 	});
 
-	
-	//Theme Switcher
-	$('#switcher-bootstrap').on('click', '#themes a', function(){
-	  var $this = $(this);
-	  //$('#bootstrap-current').text($this.text()); $('#bootstrap-css').attr('href', $this.attr('data-theme'));
-	  $('#bootstrap-current').text($this.text()); 
-	  $('#bootstrap-css').attr('href', 'assets/css/themes/'+$this.text()+'/bootstrap.min.css');
-	  //reset();
-	});
-
 
 
 
@@ -388,6 +379,40 @@ $(document).ready(function() {
   //multistep wallet login - back button
   $("#wallet .login-container #multistep-wizard-reset, .nav #wallet_options").click(function () {
     goToStep = 1;
+
+    //reset imported_wallet data if users has imported a backup file!
+    if (Object.keys(profile_data).indexOf('imported_wallet') !== -1){
+      profile_data.imported_wallet = [];
+      var fileDropArea = document.querySelectorAll('.file-drop-area')
+
+      fileDropArea[0].classList.remove('has-error');
+      fileDropArea[0].classList.remove('is-active');
+      fileDropArea[0].classList.remove('is-active-imported');
+
+      
+      fileDropArea[1].classList.add('hidden');
+      fileDropArea[1].classList.remove('has-error');
+      fileDropArea[1].classList.remove('is-active');
+      fileDropArea[1].classList.remove('is-active-imported');
+      
+
+      //document.querySelector('#loginExtraImportFile').click();
+
+      var fileDropAreaMessage = document.querySelectorAll('.file-drop-area .file-msg');
+      fileDropAreaMessage[0].innerText = 'or drag and drop the file here';
+      fileDropAreaMessage[1].innerText = 'or drag and drop the file here';
+
+      //clear choosen file on input
+      var fileDropAreaFile = document.querySelectorAll('.file-drop-area .file-input');
+      fileDropAreaFile[0].value = null;
+      fileDropAreaFile[1].value = null;
+
+      document.querySelector('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').classList.remove('alert-success');
+      document.querySelector('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').innerText = '';
+
+      //$('#openBtnImportWallet').prop('disabled', true).addClass("btn-flatbay-inactive");
+    }
+
     var currentSection = $("#wallet .login-container section:nth-of-type(" + goToStep + ")");
     currentSection.removeClass('hide').fadeIn();
     currentSection.css("transform", "translateX(0)").fadeIn();
@@ -443,8 +468,8 @@ $(document).ready(function() {
 	
 
 
-  var walletVersion = "1.15";   //is used for human versioning
-  var walletVersionCode = "10";  //is used for the update versioning of the wallet app
+  var walletVersion = "1.2";   //is used for human versioning
+  var walletVersionCode = "1";  //is used for the update versioning of the wallet app
 
 
   //render client version text
@@ -560,6 +585,346 @@ document.addEventListener(
   false
 );
 
+//*** File reader - Import wallet backup
+
+
+  // highlight drag area
+  $('.file-input').on('dragenter focus click', function() {
+    $(this)[0].parentElement.classList.add('is-active');
+  });
+
+  // back to normal state
+  $('.file-input').on('dragleave blur drop', function(e) {
+    $(this)[0].parentElement.classList.remove('is-active');
+  });
+
+  // change inner text
+  $('.file-input').on('change', async function(e) {
+    
+
+    //Local file reading not allowed by browser
+    if (!window.FileReader) {
+      var message = '<p>The <a href="http://dev.w3.org/2006/webapi/FileAPI/" target="_blank">File API</a>s are not fully supported by this browser.</p> <p>Upgrade your browser to the latest version.</p>';
+      $textContainer.html(message);
+      return ;
+    }
+    
+    //console.log('fileDropArea: ', e.target);
+    //e.target.offsetParent.children[1].children[0].firstElementChild
+    var fileDropAreaClass, fileDropArea = $(this)[0].parentElement;
+    if(fileDropArea.classList.contains('importfile1')) fileDropAreaClass = 'importfile1';
+    if(fileDropArea.classList.contains('importfile2')) fileDropAreaClass = 'importfile2';
+
+    
+    //Define variable for client data if needed
+    if(Object.keys(profile_data).indexOf('imported_wallet') === -1) {
+      profile_data.imported_wallet = [];
+      profile_data.imported_wallet[0] = [];
+      profile_data.imported_wallet[1] = [];
+    }
+    
+    //if(profile_data === undefined || Object.keys(profile_data).length === 0)
+      //profile_data.imported_wallet = [];
+
+    //validate file
+    //console.log('fileDropArea.classList: ', fileDropArea.classList);
+
+    var filesCount = $(this)[0].files.length;
+    $textContainer = $(this).prev();
+    var fileToImport = $(this)[0].files[0];
+
+    //only 1 file can be import at a time with max-size of 1024bytes
+    if (filesCount != 1 || fileToImport.size > 1024){
+      
+      if(fileDropAreaClass == 'importfile1') profile_data.imported_wallet[0] = [];
+      if(fileDropAreaClass == 'importfile2') profile_data.imported_wallet[1] = [];
+
+      //$('#openBtnImportWallet').prop('disabled', true).addClass("btn-flatbay-inactive");
+
+      fileDropArea.classList.add('has-error');
+      fileDropArea.classList.remove('is-active');
+      fileDropArea.classList.remove('is-active-imported');
+      $textContainer.html('<span class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> Filesize error on imported file!!</span>');
+      $('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').text('').addClass("hidden").addClass("hide").addClass('alert-danger').fadeOut().fadeIn();
+      return ;
+    }
+
+    var fileName = $(this).val().split('\\').pop();
+    $textContainer.html('<i class="bi bi-file-check"></i> '+ fileName);
+
+    //read the file
+    var reader = new FileReader();
+    reader.readAsText(fileToImport);
+    
+    //Error reading the import wallet file
+    reader.onerror = function() {
+      if(fileDropAreaClass == 'importfile1') profile_data.imported_wallet[0] = [];
+      if(fileDropAreaClass == 'importfile2') profile_data.imported_wallet[1] = [];
+
+      //console.log('Error reading the file!' + reader.error);
+      $textContainer.html('<span class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> Error reading the file!</span>');
+      //Enable the login button!
+      fileDropArea.classList.add('has-error');
+      fileDropArea.classList.remove('is-active');
+      //$('#openBtnImportWallet').prop('disabled', false).removeClass("btn-flatbay-inactive");
+      return ;
+    }
+    //Success in reading the import wallet file
+    reader.onload = async function() {
+      //console.log(reader.result);
+      
+      //check if imported wallet backup is in supported format
+      var linesSplitted = splitLines(reader.result);
+      var linesLength = linesSplitted.length;
+      
+      //Wallet file-format must have either 2 or 4 lines!
+      if(linesLength == 2 || linesLength == 4) {
+
+        
+        //***validate imported backup file
+        //get private key fileline
+        privKeyFileLine = (linesLength-1);
+
+        //console.log('privKeyFileLine: ' + privKeyFileLine);
+        //console.log('linesSplitted: ' + linesSplitted);
+
+          //console.log('privKeyFileLine2: ' + privKeyFileLine);
+
+          var privkey1, privkey2, decodedPrivkey1, decodedPrivkey2;
+          //check if private key is encrypted!
+
+          if ((linesSplitted[privKeyFileLine]).includes("PASSWORDPROTECTED:")) {
+
+            //call decryptModal() with
+            //linesSplitted[privKeyFileLine], fileDropAreaClass
+            var decryptedKey;
+
+            try {
+              decryptedKey = await decryptPrivKeyModal(linesSplitted[privKeyFileLine], fileDropAreaClass, {'encryptedText': linesSplitted[privKeyFileLine]});
+
+              //console.log('Success!');
+              fileDropArea.classList.remove('has-error');
+              fileDropArea.classList.add('is-active-imported');
+
+              //console.log('decryptedKey: ', decryptedKey)
+
+              
+              //is imported private keys from the files the same?
+              //is this even needed lol :)
+              //if ( isArraysEqual(profile_data.imported_wallet[0], profile_data.imported_wallet[1])) {}
+              /*
+              format of the imported client wallet file:
+              [0] DO NOT LOSE, ALTER OR SHARE THIS FILE - WITHOUT THIS FILE, YOUR MONEY IS AT RISK. BACK UP! YOU HAVE BEEN WARNED! Bitmessage key: (32byte hex key)
+              [1] pubkey1
+              [2] pubkey2
+              [3] (PASSWORDPROTECTED:)PRIVATE KEY
+              */
+
+              //save import import-file to client data
+              if(fileDropAreaClass == 'importfile1') {
+                profile_data.imported_wallet[0] = linesSplitted;
+                profile_data.imported_wallet[0]['decrypted'] = decryptedKey;
+              }
+              if(fileDropAreaClass == 'importfile2'){
+                profile_data.imported_wallet[1] = linesSplitted;
+                profile_data.imported_wallet[1]['decrypted'] = decryptedKey;
+              }
+
+              $('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').html('Decrypting your wallet with the secret key was successfull.<br>You may now proceed with the login!').removeClass("hidden").removeClass("hide").removeClass('alert-danger').addClass('alert-success').fadeOut().fadeIn();
+            } catch(e) {
+              fileDropArea.classList.add('has-error');
+              fileDropArea.classList.remove('is-active-imported');
+
+
+              //console.log('Promise Error!');
+              //console.log('e', e);
+            }
+
+          
+
+
+        }
+
+        //decrypt encrypted wallet!
+
+        
+        //console.log(document.querySelector('.file-drop-area.has-error'));
+        //Check if there is any FileDropAreas's with errors
+        //if not, enable login button
+        if (document.querySelector('.file-drop-area.has-error') === null) {
+          //$('#openBtnImportWallet').prop('disabled', false).removeClass("btn-flatbay-inactive");
+        }else{
+          $textContainer.html('or drag and drop the file here');
+
+          //$('#openBtnImportWallet').prop('disabled', true).addClass("btn-flatbay-inactive");
+          $('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').html('').addClass("hidden").addClass("hide").addClass('alert-danger').removeClass('alert-success').fadeOut().fadeIn();
+        }
+        return;
+      }
+
+      if(fileDropAreaClass == 'importfile1') profile_data.imported_wallet[0] = [];
+      if(fileDropAreaClass == 'importfile2') profile_data.imported_wallet[1] = [];
+
+      //Fileformat is not supported, Error: Wrong Backup Format
+      fileDropArea.classList.add('has-error');
+      fileDropArea.classList.remove('is-active');
+      fileDropArea.classList.remove('is-active-imported');
+      $textContainer.html('<span class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> Wrong Backup format!</span>');
+      $('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').text('').addClass("hidden").addClass("hide").addClass('alert-danger').fadeOut().fadeIn();
+      //Disable the login button!
+      //$('#openBtnImportWallet').prop('disabled', true).addClass("btn-flatbay-inactive");
+    }
+  });
+
+function StartPromise() {
+    var onePromise = new Promise((resolve, reject) => {
+      // We call resolve(...) when what we were doing async succeeded, and reject(...) when it failed.
+      // In this example, we use setTimeout(...) to simulate async code. 
+      // In reality, you will probably be using something like XHR or an HTML5 API.
+      
+        $("#btnSave").click(function(){resolve('yay');});
+        
+        $('#myModal').on('hidden.bs.modal', function (e) {
+          reject('boo');
+        })
+        
+        $('#myModal').modal('show');
+    });
+    
+    onePromise.then((successMessage) => {
+      // successMessage is whatever we passed in the resolve(...) function above.
+      // It doesn't have to be a string, but if it is only a succeed message, it probably will be.
+      console.log(successMessage);
+      $('#myModal').modal('hide');
+    }).catch((reason) => {
+        console.log(reason);
+        $('#myModal').modal('hide');
+    });
+}
+
+async function decryptPrivKeyModal(encryptedText, fileDropAreaClass, data){
+
+  //console.log('encryptedText: ' + encryptedText);
+  //console.log('fileDropAreaClass: ' + fileDropAreaClass);
+  //console.log('data: ',  data);
+  var decodedPrivkey = false;
+  var decryptModal;
+
+  onePromise = new Promise((resolve, reject) => {
+  decryptModal = BootstrapDialog.show({
+                closable: true,
+                closeByBackdrop: false,
+                closeByKeyboard: false,
+                title: 'Decrypt Private Key',
+                nl2br: false,
+                message: document.querySelector('.decryptPrivateKey').innerHTML,
+                //message: '<div class="callout callout-no-border m-1">  <label class="form-control" for="secretKey1">Secret Key 1:</label> <div class="form-group input-group">  <input id="secretKey1" name="secretKey" type="password" class="form-control secretKey" placeholder="Private Key" required>           <span class="input-group-btn">             <button class="showKey btn btn-default" type="button">Show</button>           </span>          </div> <hr class=""><div class="alert alert-danger walletDecryptStatus"><i class="bi bi-exclamation-triangle-fill"></i></div></div>',
+                onshown: function(dialogRef) {
+                  $('.encryptedMessage').text(dialogRef.getData('encryptedText'));
+                  dialogRef.getButton('modal-proceed-btn').disable();
+              },
+                onhide: function(dialogRef){
+                    //reject('Process cancelled!');
+                    return true;  //close the dialog
+                },
+                data: {
+                    
+                    //'encryptedText1': '', //encrypted private key 1
+                    //'encryptedText2': ''  //encrypted private key 2
+                    'decodedKey': ''
+                    
+                },
+                buttons: [{
+                    id: 'modal-cancel-btn',
+                    label: 'Cancel',
+                    icon: 'bi bi-x',
+                    cssClass: ' none',
+                    action: function(dialogRef){
+                      alert('decodedKey: ' + dialogRef.getData('decodedKey'));
+                      //alert('ok: ' + dialogRef.setData('sencryptedText', importedWalletBackup[0][privKeyFileLine]));
+                      //alert('ok: ' + dialogRef.getData('sencryptedText'));
+                      reject('Process cancelled!');
+                      dialogRef.close();
+                    }
+                  }, {
+                    id: 'modal-decrypt-btn',
+                    label: 'Decrypt',
+                    icon: 'bi bi-unlock-fill',
+                    //cssClass: 'btn-flatbay',
+                    action: function(dialogRef) {
+                        //dialogRef.close();
+                        var decryptWithSecret1 = dialogRef.getModalBody().find('input').val();
+                        //has-success
+                        decrypted1 = decryptText(dialogRef.getData('encryptedText'), decryptWithSecret1);
+                        console.log('decrypted1: ', decrypted1);
+
+                        decodedPrivkey = getDecodedPrivKey(decrypted1);
+                        if(!decodedPrivkey){
+                          dialogRef.getModalBody().find('.walletDecryptStatus').removeClass('hidden').find('.alert').html("Error decrypting the Wallet! <br>").removeClass('hidden').removeClass('alert-success').addClass('alert-danger');
+                          dialogRef.setData('decodedKey', decodedPrivkey);
+                          //reject('Error decrypting the Wallet!');
+                        } else{
+                          dialogRef.getModalBody().find('.walletDecryptStatus').removeClass('hidden').find('.alert').html("Success: Decrypted private key is valid! <br>").removeClass('hidden').removeClass('alert-danger').addClass('alert-success');
+                          dialogRef.getButton('modal-cancel-btn').disable();
+                          dialogRef.getButton('modal-decrypt-btn').disable();
+                          dialogRef.getButton('modal-proceed-btn').enable();
+                          resolve(decodedPrivkey);
+                          //dialogRef.close();
+                          
+                          
+                        }
+
+                    }
+                  }, {
+                    id: 'modal-proceed-btn',
+                    label: 'Proceed',
+                    icon: 'bi bi-door-open-fill',
+                    cssClass: 'btn-success',
+                    action: function(dialogRef){
+                      dialogRef.close();
+                    }
+                }]/*,
+                callback: function(result) {
+                    // result will be true if button was clicked, while it will be false if users close the dialog directly.
+
+                    if (result)
+                      resolve('yayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');
+                    else
+                      reject('nooooooooooooooooooooooooooooooooooooo')
+
+                    console.log('Result is: ' + result);
+                    console.log('decodedKey: '+ decryptModal.getData('decodedKey'));
+                    return result;
+                }*/
+            });
+
+
+  //decryptModal.setData('encryptedText', linesSplitted[privKeyFileLine]);
+  decryptModal.setData('encryptedText', data.encryptedText);
+
+  });
+
+  onePromise.then((successMessage) => {
+      // successMessage is whatever we passed in the resolve(...) function above.
+      // It doesn't have to be a string, but if it is only a succeed message, it probably will be.
+      
+      //console.log('successMessage: ',  successMessage);
+      //$('#myModal').modal('hide');
+    }).catch((reason) => {
+        
+        //console.log('catchReason: ',  reason);
+        //$('#myModal').modal('hide');
+    });
+
+  
+  console.log('onePromise: ' + onePromise);
+  return onePromise;
+}
+
+//***Function to split string into lines
+//https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-139.php
+var splitLines = str => str.split(/\r?\n/); //splitLines(arg);
+
 
 //Create Notifies for users for Balance change 
 PNotify_helper = function (title, text, type) {
@@ -644,8 +1009,23 @@ $('.generatePassword').on("click", function () {
     var inputElPass = $el.attr( "data-input-for");
     $("#"+inputElPass).val(generatePassword());
   });
-/*
 
+/*
+ @ Theme Switch Toggle Button
+*/
+const toggleButton = document.querySelector(".toggleTheme");
+
+toggleButton.addEventListener("click", () => {
+ document.body.classList.toggle("dark-mode");
+});
+
+
+/*
+//promise-based dialog modal 
+//https://loading.io/lib/modal/
+
+//promise await try catch
+https://www.valentinog.com/blog/throw-async/
 if (document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll)) {
    // Document already fully loaded
    ready();
@@ -693,3 +1073,4 @@ document.onreadystatechange = function () {
 
 domReady(() => console.log("DOM is ready, come and get it!"));
 */
+
