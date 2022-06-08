@@ -611,9 +611,15 @@ document.addEventListener(
     
     //console.log('fileDropArea: ', e.target);
     //e.target.offsetParent.children[1].children[0].firstElementChild
-    var fileDropAreaClass, fileDropArea = $(this)[0].parentElement;
-    if(fileDropArea.classList.contains('importfile1')) fileDropAreaClass = 'importfile1';
-    if(fileDropArea.classList.contains('importfile2')) fileDropAreaClass = 'importfile2';
+    var fileDropAreaClass, fileDropArea = $(this)[0].parentElement, filekey;
+    if(fileDropArea.classList.contains('importfile1')) {
+      fileDropAreaClass = 'importfile1';
+      filekey = 0;
+    }
+    if(fileDropArea.classList.contains('importfile2')) {
+      fileDropAreaClass = 'importfile2';
+      filekey = 1;
+    }
 
     
     //Define variable for client data if needed
@@ -622,9 +628,6 @@ document.addEventListener(
       profile_data.imported_wallet[0] = [];
       profile_data.imported_wallet[1] = [];
     }
-    
-    //if(profile_data === undefined || Object.keys(profile_data).length === 0)
-      //profile_data.imported_wallet = [];
 
     //validate file
     //console.log('fileDropArea.classList: ', fileDropArea.classList);
@@ -636,8 +639,7 @@ document.addEventListener(
     //only 1 file can be import at a time with max-size of 1024bytes
     if (filesCount != 1 || fileToImport.size > 1024){
       
-      if(fileDropAreaClass == 'importfile1') profile_data.imported_wallet[0] = [];
-      if(fileDropAreaClass == 'importfile2') profile_data.imported_wallet[1] = [];
+      profile_data.imported_wallet[filekey] = [];
 
       //$('#openBtnImportWallet').prop('disabled', true).addClass("btn-flatbay-inactive");
 
@@ -658,15 +660,13 @@ document.addEventListener(
     
     //Error reading the import wallet file
     reader.onerror = function() {
-      if(fileDropAreaClass == 'importfile1') profile_data.imported_wallet[0] = [];
-      if(fileDropAreaClass == 'importfile2') profile_data.imported_wallet[1] = [];
+      profile_data.imported_wallet[filekey] = [];
 
       //console.log('Error reading the file!' + reader.error);
       $textContainer.html('<span class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> Error reading the file!</span>');
       //Enable the login button!
       fileDropArea.classList.add('has-error');
       fileDropArea.classList.remove('is-active');
-      //$('#openBtnImportWallet').prop('disabled', false).removeClass("btn-flatbay-inactive");
       return ;
     }
     //Success in reading the import wallet file
@@ -721,14 +721,9 @@ document.addEventListener(
               */
 
               //save import import-file to client data
-              if(fileDropAreaClass == 'importfile1') {
-                profile_data.imported_wallet[0] = linesSplitted;
-                profile_data.imported_wallet[0]['decrypted'] = decryptedKey;
-              }
-              if(fileDropAreaClass == 'importfile2'){
-                profile_data.imported_wallet[1] = linesSplitted;
-                profile_data.imported_wallet[1]['decrypted'] = decryptedKey;
-              }
+              profile_data.imported_wallet[filekey] = linesSplitted;
+              profile_data.imported_wallet[filekey]['decrypted'] = decryptedKey;
+
 
               $('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').html('Decrypting your wallet with the secret key was successfull.<br>You may now proceed with the login!').removeClass("hidden").removeClass("hide").removeClass('alert-danger').addClass('alert-success').fadeOut().fadeIn();
             } catch(e) {
@@ -740,10 +735,19 @@ document.addEventListener(
               //console.log('e', e);
             }
 
+        } else {
+          //private key is not encrypted, so decode it!
+          var decodedPrivkey = getDecodedPrivKey(linesSplitted[privKeyFileLine]);
+          if(decodedPrivkey) {
+            $('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').html('Your file was imported successfully.<br>You may now proceed with the login!').removeClass("hidden").removeClass("hide").removeClass('alert-danger').addClass('alert-success').fadeOut().fadeIn();
           
-
-
+            //save import import-file to client data
+              profile_data.imported_wallet[filekey] = linesSplitted;
+              profile_data.imported_wallet[filekey]['decrypted'] = decodedPrivkey;
+          }
+          
         }
+
 
         //decrypt encrypted wallet!
 
@@ -762,8 +766,7 @@ document.addEventListener(
         return;
       }
 
-      if(fileDropAreaClass == 'importfile1') profile_data.imported_wallet[0] = [];
-      if(fileDropAreaClass == 'importfile2') profile_data.imported_wallet[1] = [];
+      profile_data.imported_wallet[filekey] = [];
 
       //Fileformat is not supported, Error: Wrong Backup Format
       fileDropArea.classList.add('has-error');
