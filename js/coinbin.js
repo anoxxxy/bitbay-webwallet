@@ -162,7 +162,7 @@ document.getElementById('multisigWalletNnumber').addEventListener('change', func
 @ Switch Address when client have logged in with 2 private keys
 */
 document.querySelector('.switchAddress').addEventListener('click', function (e) {
-	console.log('triggering switchAddress');
+	console.log('Triggering switch multisig address');
 	switchPubKeys(profile_data);
 	return;
 });
@@ -193,8 +193,13 @@ document.querySelector('#loginExtraImportFile').addEventListener('click', functi
 				profile_data.imported_wallet[1] = [];
 
     //reset file-drop-area (file-input and message)!
-    privateKeyFileArea.children[1].innerText = "or drag and drop the file here";
-    privateKeyFileArea.children[2].value = null;
+    //privateKeyFileArea.children[1].innerText = "or drag and drop the file here";
+    //privateKeyFileArea.children[2].value = null;
+
+    document.querySelector('.file-drop-area.importfile2 .file-msg').innerText = "or drag and drop the file here";
+    document.querySelector('.file-drop-area.importfile2 .file-input').value = null;
+
+    $('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').html('Second import file option was removed!').removeClass("hidden").removeClass("hide").addClass('alert-warning').removeClass('alert-success').fadeOut().fadeIn();
 
 	}
 });
@@ -736,6 +741,7 @@ profile_data = {
 		$('#disclaimer .btn-flatbay').prop('disabled', false);
 
 		$('.publicKeySortNotification').addClass('hidden');
+		$(".switch_pubkeys").addClass('hidden');
 		
 		/*
 		$('.walletPubKeys .redeemScript_wallet').parent().addClass('hidden');
@@ -1337,8 +1343,8 @@ async function init_broadcast_progress_bar(txinputs_total, manualTransaction=1) 
 		var total = (devamount.val()*1) + (txfee.val()*1);
 
 		$.each($("#walletSpendTo .output"), function(i,o){
-			var amount = $('.amount',o);
-			var address = $('.addressTo',o);
+			var amount = $('.amount',o).trim();
+			var address = $('.addressTo',o).trim();
 
 			total += amount.val()*1;
 
@@ -4403,6 +4409,10 @@ observer.observe(target, config);
 			$(".walletPubKeys .pubkey2").val(profile_data.public_keys[1]).parent().removeClass("hidden");
 			$("#walletKeys .privkeyaes2").val(privkeyaes2).removeClass("hidden");
 			$(".walletPubKeys .redeemScript_wallet").removeClass("hidden");
+
+			$(".nav .switch_pubkeys").removeClass("hidden");
+
+			
 
 			profile_data.pubkey_sorted = isArraySorted(profile_data.public_keys);
 

@@ -396,8 +396,6 @@ $(document).ready(function() {
       fileDropArea[1].classList.remove('is-active-imported');
       
 
-      //document.querySelector('#loginExtraImportFile').click();
-
       var fileDropAreaMessage = document.querySelectorAll('.file-drop-area .file-msg');
       fileDropAreaMessage[0].innerText = 'or drag and drop the file here';
       fileDropAreaMessage[1].innerText = 'or drag and drop the file here';
@@ -739,7 +737,7 @@ document.addEventListener(
           //private key is not encrypted, so decode it!
           var decodedPrivkey = getDecodedPrivKey(linesSplitted[privKeyFileLine]);
           if(decodedPrivkey) {
-            $('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').html('Your file was imported successfully.<br>You may now proceed with the login!').removeClass("hidden").removeClass("hide").removeClass('alert-danger').addClass('alert-success').fadeOut().fadeIn();
+            $('section.login-box[data-wallet-login-multistep-wizard=import_wallet] .walletLoginStatus').html('Your file was imported successfully.<br>You may now proceed with the login!').removeClass("hidden").removeClass("hide").removeClass('alert-danger').removeClass('alert-warning').addClass('alert-success').fadeOut().fadeIn();
           
             //save import import-file to client data
               profile_data.imported_wallet[filekey] = linesSplitted;
