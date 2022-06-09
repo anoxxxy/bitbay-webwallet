@@ -737,7 +737,7 @@ profile_data = {
 		$(".walletPubKeys .pubkey2").val("");
 		$("#walletKeys .privkeyaes2").val("");
 		
-		$('.btn-flatbay').prop('disabled', true).addClass("btn-flatbay-inactive");
+
 		$('#disclaimer .btn-flatbay').prop('disabled', false);
 
 		$('.publicKeySortNotification').addClass('hidden');
