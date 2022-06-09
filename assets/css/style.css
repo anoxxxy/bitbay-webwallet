@@ -69,7 +69,7 @@ body {
   padding-right: 5px;
 }
 
-*:not(input[type="radio"], input[type="checkbox"]) {
+*:not(input[type="radio"], input[type="checkbox"], .nav, .nav.dropdown, .nav.dropdown-toggle) {
   border-radius: 8px;
 }
 h1,h2,h3,h4,h5,h6 {
@@ -139,8 +139,8 @@ boxes #f7f7f7
 	
 	#header .navbar-nav {
 		float: right !important;
-    margin-top: 14px;
-		background-color: #4d3aaf;
+    margin-top: 4px;
+  	margin-right: -7px;
   }
   #header .navbar-nav>li {
     float: none;
@@ -170,10 +170,18 @@ boxes #f7f7f7
 	line-height: 1.5;
 }
 
-#header .navbar-nav.newmenu {
-	margin-right: -1px;
-	background-color: #6456ab;
+.newmenu .menu-icon {
+	font-size: 24px;
 }
+.loggedin .menu-icon {
+	color: #6456ab;
+}
+.nav .walletAddress {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 230px;
+}
+
 
 .dropdown-menu>.active>a, 
 .dropdown-menu>.active>a:hover, 
@@ -195,12 +203,7 @@ boxes #f7f7f7
 .loggedin .navbar-default .navbar-nav > li > a:focus {
 	background-color: #f0f0f0 !important;
 }
-.newmenu .glyphicon {
-	font-size: 24px;
-}
-.loggedin .newmenu .glyphicon {
-	color: #6456ab;
-}
+
 .dropdown-menu p {
 	margin: 3px 0;
 }
@@ -308,14 +311,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   position: absolute;
   right: 25px;
 }
-.walletAddress {
-  /*
-  display: inline-block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 240px;
-  */
-}
+
 
 
 /* On screens that are 992px wide or less, go from four columns to two columns */
@@ -431,6 +427,7 @@ max-width: calc(100% - 100px);
 .btn-flat-purple {
 	color: #6456ab;	
 	font-weight: 500;
+	padding: 13px 20px;
 }
 .showKey,
 .showKey:focus,
@@ -2269,6 +2266,7 @@ p {
     float: left;
     min-width: 160px;
 		right: 0;
+		max-width: 240px;
 	}
 	.tab-content.active:not(#wallet), .loggedout .tab-content.active {
 	  background: #f7f7f7;

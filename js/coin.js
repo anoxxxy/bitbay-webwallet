@@ -31,6 +31,7 @@
 	coinjs.decimalPlaces = 8;
 	coinjs.symbol = 'BAY';
 	coinjs.symbolReserve = 'BAYR';
+	coinjs.amountCoinSymbolActive = coinjs.symbol;
 	coinjs.debug = false;
 	coinjs.block_processor = 'bp';
 	coinjs.burn_fee = 0.00005590;	//satoshi's

@@ -780,6 +780,22 @@ profile_data = {
 		walletBalance();
 	});
 
+
+	$("#walletSpendType").click(function(){
+		var send_liquid = $("#walletSpendTypeLiquid").prop("checked");
+		var send_reserve = $("#walletSpendTypeReserve").prop("checked");
+
+
+		if(send_liquid)
+			coinjs.amountCoinSymbolActive = coinjs.symbol;
+		else
+			coinjs.amountCoinSymbolActive = coinjs.symbolReserve;
+
+		$("#walletSpendTab .input-group-addon.amountCoinSymbol").text(coinjs.amountCoinSymbolActive);
+	});
+
+		
+
 	$("#walletConfirmSend").click(async function(){
 		var thisbtn = $(this);
 		var tx = coinjs.transaction();
