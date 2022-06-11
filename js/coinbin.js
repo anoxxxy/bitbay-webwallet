@@ -4426,7 +4426,7 @@ observer.observe(target, config);
 			$("#walletKeys .privkeyaes2").val(privkeyaes2).removeClass("hidden");
 			$(".walletPubKeys .redeemScript_wallet").removeClass("hidden");
 
-			$(".nav .switch_pubkeys").removeClass("hidden");
+			$(".switch_pubkeys").removeClass("hidden");
 
 			
 

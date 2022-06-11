@@ -271,16 +271,23 @@ $(document).ready(function() {
   $(".navbar-nav").on("click",function() {
     //console.log("navbar click");
     $(".navbar-collapse").removeClass("in");
+    
+
+    
   });
   //hide menu when click outside
+  /*
   $("nobody").on("click",function() {
-    //console.log("body click");
+    console.log("body click");
     $(".navbar-collapse").removeClass("in");
   });
+  */
 
 
 	//Navbar Submenus
 	$('.navbar a.dropdown-toggle').on('click', function(e) {
+    //$('body').append('<div class="modal-backdrop fade in"></div>');
+
         var $el = $(this);
         var $parent = $(this).offsetParent(".dropdown-menu");
         $(this).parent("li").toggleClass('open');
@@ -676,26 +683,28 @@ document.addEventListener(
       var linesLength = linesSplitted.length;
       
       //Wallet file-format must have either 2 or 4 lines!
-      if(linesLength == 2 || linesLength == 4) {
+      if(linesLength == 2  || linesLength == 4 || linesLength == 5) {
 
-        
+        // somehow the exported backupfile from client wallet has a new empty 5th line, just skip the last 5th line
+        if(linesLength == 5)
+          linesLength =4;
         //***validate imported backup file
         //get private key fileline
         privKeyFileLine = (linesLength-1);
 
         //console.log('privKeyFileLine: ' + privKeyFileLine);
-        //console.log('linesSplitted: ' + linesSplitted);
+        console.log('linesSplitted: ' + linesSplitted);
 
           //console.log('privKeyFileLine2: ' + privKeyFileLine);
 
-          var privkey1, privkey2, decodedPrivkey1, decodedPrivkey2;
+          var privkey1, privkey2, decodedPrivkey1, decodedPrivkey2, decryptedKey;
           //check if private key is encrypted!
-
+          console.log('before if: '+ linesSplitted[privKeyFileLine]);
           if ((linesSplitted[privKeyFileLine]).includes("PASSWORDPROTECTED:")) {
 
             //call decryptModal() with
             //linesSplitted[privKeyFileLine], fileDropAreaClass
-            var decryptedKey;
+            
 
             try {
               decryptedKey = await decryptPrivKeyModal(linesSplitted[privKeyFileLine], fileDropAreaClass, {'encryptedText': linesSplitted[privKeyFileLine]});
@@ -733,7 +742,9 @@ document.addEventListener(
               //console.log('e', e);
             }
 
-        } else {
+        }else if ((linesSplitted[privKeyFileLine]).includes("KEY:")) {
+          linesSplitted[privKeyFileLine] = (linesSplitted[privKeyFileLine]).replace('KEY:', '').trim();
+
           //private key is not encrypted, so decode it!
           var decodedPrivkey = getDecodedPrivKey(linesSplitted[privKeyFileLine]);
           if(decodedPrivkey) {
@@ -743,7 +754,9 @@ document.addEventListener(
               profile_data.imported_wallet[filekey] = linesSplitted;
               profile_data.imported_wallet[filekey]['decrypted'] = decodedPrivkey;
           }
-          
+
+        } else {
+            //error format
         }
 
 
@@ -810,6 +823,7 @@ async function decryptPrivKeyModal(encryptedText, fileDropAreaClass, data){
   //console.log('data: ',  data);
   var decodedPrivkey = false;
   var decryptModal;
+  //encryptedText = encryptedText.trim();
 
   onePromise = new Promise((resolve, reject) => {
   decryptModal = BootstrapDialog.show({
