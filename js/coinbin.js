@@ -3754,10 +3754,12 @@ observer.observe(target, config);
 		var html = '';
 		$("#verifyHDaddress .derived_data table tbody").html("");
 		for(var i=index_start;i<=index_end;i++){
-			if($("#hdpathtype option:selected").val()=='simple'){
-				var derived = hd.derive(i);
-			} else {
+			if($("#hdpathtype option:selected").val()=='custom'){
 				var derived = hd.derive_path(($("#hdpath input").val().replace(/\/+$/, ""))+'/'+i);
+			} else {
+				//var derived = hd.derive(i);
+				var selectedHDpath = $('#hdpathtype').find(':selected').attr('data-hdpath');
+				var derived = hd.derive_path((selectedHDpath.replace(/\/+$/, ""))+'/'+i);
 			}
 			html += '<tr>';
 			html += '<td>'+i+'</td>';
@@ -3771,11 +3773,16 @@ observer.observe(target, config);
 	}
 
 	$("#hdpathtype").change(function(){
-		if($(this).val()=='simple'){
-			$("#hdpath").removeClass().addClass("hidden");
-		} else {
+		
+		//$("#hdpath span").addClass("hidden");
+		//$('#hdpath [data-hdpath="'+$(this).val()+'"]').removeClass("hidden").parent().removeClass("hidden");
+		
+		if($(this).val()=='custom'){
 			$("#hdpath").removeClass();
+		} else {
+			$("#hdpath").removeClass().addClass("hidden");
 		}
+		
 	});
 
 

@@ -129,7 +129,7 @@
                 <li class="divider-text"></li>
                 <li><a href="#network" data-toggle="tab">Network</a></li>
                 <li class="divider-text"></li>
-                <li class="hidden"><a href="#newAddress" data-toggle="tab">New Address</a></li>
+                <li><a href="#newAddress" data-toggle="tab">New Address</a></li>
                 <li><a href="#newTimeLocked" data-toggle="tab">Time Locked Address</a></li>
                 <li><a href="#newMultiSig" data-toggle="tab">MultiSig Address</a></li>
                 <li><a href="#newHDaddress" data-toggle="tab">HD Address</a></li>
@@ -1785,13 +1785,14 @@
                 <b>Path</b>
                 <br>
                 <select class="form-control" id="hdpathtype">
-                  <option value="simple">Simple: m/i</option>
+                  <option value="bitbay_hdpath" data-hdpath="m/44'/2125'/0'/0" selected>BIP-0044</option>
+                  <option value="simple" data-hdpath="m/0/1">Simple: m/i</option>
                   <option value="custom">Custom</option>
                 </select>
 
                 <div id="hdpath" class="hidden" style="margin-top:4px">
-                  <span class="input-group">
-                      <input type="text" class="form-control" value="m/0/1">  <br>
+                  <span class="input-group" data-hdpath="simple">
+                      <input type="text" class="form-control" value="m/44'/2125'/0'/0">  <br>
                       <span class="input-group-addon"> / </span>
                   </span>
                 </div>
@@ -1840,7 +1841,7 @@
 
         </div>
 
-        <div class="tab-pane tab-content" id="sign">
+        <div class="tab-pane tab-content" id="sign">-
           <h2>Sign Transaction <small>once a transaction has been verified</small></h2>
           <p>Once you have <a href="#verify">verified</a> a transaction you can sign and then <a href="#broadcast">broadcast</a> it into the network.</p>
 
@@ -2423,7 +2424,7 @@
             <li class="divider-text"></li>
             <li><a href="#network" data-toggle="tab">Network</a></li>
             <li class="divider-text"></li>
-            <li class="hidden"><a href="#newAddress" data-toggle="tab">New Address</a></li>
+            <li><a href="#newAddress" data-toggle="tab">New Address</a></li>
             <li><a href="#newTimeLocked" data-toggle="tab">Time Locked Address</a></li>
             <li><a href="#newMultiSig" data-toggle="tab">MultiSig Address</a></li>
             <li><a href="#newHDaddress" data-toggle="tab">HD Address</a></li>
